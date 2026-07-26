@@ -1,0 +1,36 @@
+:root {
+  /* Brand × B2B Trust & Authority (ui-ux-pro-max) */
+  --color-blue-900: #0a2540;
+  --color-blue-700: #134a8a;
+  --color-blue-100: #e8f0f8;
+  --color-white: #ffffff;
+  --color-slate-50: #f4f7fb;
+  --color-ink: #0f1724;
+  --color-muted: #5a6a7a;
+  --color-line: #d0dae6;
+  --color-dusky-red: #8b3a42;
+  --color-dusky-red-soft: #f3e6e8;
+
+  --background: var(--color-slate-50);
+  --foreground: var(--color-ink);
+
+  --font-display: var(--font-syne), system-ui, sans-serif;
+  --font-body: var(--font-ibm-plex-sans), system-ui, sans-serif;
+  --font-mono: var(--font-ibm-plex-mono), ui-monospace, monospace;
+
+  /* Spacious density dial */
+  --space-xs: 0.25rem;
+  --space-sm: 0.5rem;
+  --space-md: 1.5rem;
+  --space-lg: 2rem;
+  --space-xl: 3rem;
+  --space-2xl: 4rem;
+  --space-3xl: 6rem;
+
+  --radius-none: 0;
+  --radius-sm: 2px;
+  --measure: 42rem;
+  --header-h: 4.5rem;
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --duration-hover: 220ms;
+}

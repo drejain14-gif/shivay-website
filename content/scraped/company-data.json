@@ -1,0 +1,99 @@
+{
+  "source": "https://shivaaygroup.co.in",
+  "scrapedAt": "2026-07-19",
+  "pages": {
+    "home": "https://shivaaygroup.co.in/index.html",
+    "about": "https://shivaaygroup.co.in/about.html",
+    "contact": "https://shivaaygroup.co.in/contact.html",
+    "team": "https://shivaaygroup.co.in/team.html",
+    "faq": "https://shivaaygroup.co.in/faq.html"
+  },
+  "company": {
+    "name": "Shivaay Technocrat Service",
+    "alternateNames": ["Shivaay Groups", "Shivaay Technocrats"],
+    "founded": "February 2017",
+    "foundedAs": "Mechanical Laboratory",
+    "descriptionFromSite": "Multi-disciplinary consultancy and quality control organization serving the Civil Industry.",
+    "accreditations": [
+      "Government Approved",
+      "NABL Accredited (mechanical laboratory)"
+    ],
+    "founder": {
+      "name": "Er. Vibhor Kulshrestha",
+      "title": "Chartered Engineer (IEI)",
+      "role": "Founder"
+    },
+    "vision": "To be recognized through performance and excellence as a leading consultant & quality engineer.",
+    "mission": "To grow through professionalism, innovation, and consistent performance.",
+    "capabilitiesListedOnSite": [
+      "Laboratory Services",
+      "Engineering Services",
+      "Mechanical Testing",
+      "Geo-Technical Investigation",
+      "Non-Destructive Testing",
+      "Solar Power Projects"
+    ],
+    "servicesMentioned": [
+      "Tender Consultation",
+      "Land Assessment",
+      "Geo Tech Investigation",
+      "Material Testing",
+      "Chemical Testing",
+      "Mechanical Laboratory Testing",
+      "Non-Destructive Testing (NDT)",
+      "Highway Projects consultancy",
+      "Solar Power Projects"
+    ]
+  },
+  "contact": {
+    "address": {
+      "line1": "Diamond Retreat, C-9, Mahal Yojna, Jagatpura",
+      "city": "Jaipur",
+      "region": "Rajasthan",
+      "postalCode": "302017",
+      "country": "IN",
+      "full": "Diamond Retreat, C-9, Mahal Yojna, Jagatpura, Jaipur (Raj.) - 302017"
+    },
+    "phones": ["+91-9828167975", "+91-9772178631"],
+    "emails": ["info@shivaaygroups.com", "shivaaytechno@gmail.com"],
+    "hours": {
+      "weekdays": "Mon - Fri: 9:00 AM - 6:00 PM",
+      "weekend": "Sat - Sun: Closed"
+    }
+  },
+  "claimsNeedingConfirmation": [
+    {
+      "claim": "28+ Years of Experience",
+      "source": "home",
+      "note": "Conflicts with founded February 2017 and with 36 Years Exp. claim"
+    },
+    {
+      "claim": "36 Years Exp.",
+      "source": "home",
+      "note": "Conflicts with founded February 2017 and with 28+ claim"
+    }
+  ],
+  "faqFromSite": [
+    {
+      "question": "What services does Shivaay Technocrat Service provide?",
+      "answer": "Mechanical Laboratory Testing, Geo-Technical Investigation, Non-Destructive Testing (NDT), Solar Power Projects, and Highway Projects consultancy."
+    },
+    {
+      "question": "Are you Government Approved?",
+      "answer": "Yes, Government Approved and NABL Accredited."
+    },
+    {
+      "question": "Where are you located?",
+      "answer": "Diamond Retreat, C-9, Mahal Yojna, Jagatpura, Jaipur – 302017."
+    },
+    {
+      "question": "How can I contact you?",
+      "answer": "Phone +91-9828167975 or email info@shivaaygroups.com."
+    }
+  ],
+  "pageGaps": [
+    "https://shivaaygroup.co.in/services.html — 404",
+    "https://shivaaygroup.co.in/privacy-policy.html — 404",
+    "https://shivaaygroup.co.in/terms.html — timeout / unavailable"
+  ]
+}
