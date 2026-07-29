@@ -97,14 +97,14 @@ export function AboutUsScrollSection() {
           <div className="lg:col-span-5">
             <div
               data-about-portrait
-              className="relative mx-auto aspect-[4/5] w-full max-w-md overflow-hidden border border-dusky-red/20 bg-blue-900/5 lg:mx-0 lg:max-w-none"
+              className="relative mx-auto aspect-[3/4] w-full max-w-sm overflow-hidden border border-dusky-red/20 bg-blue-900/5 lg:mx-0 lg:max-w-none"
             >
               <Image
                 src={IMAGES.founder.src}
                 alt={IMAGES.founder.alt}
                 fill
-                sizes="(max-width: 1024px) 90vw, 40vw"
-                className="object-cover object-top"
+                sizes="(max-width: 1024px) 90vw, 36vw"
+                className="object-cover object-center"
               />
             </div>
           </div>
