@@ -85,35 +85,35 @@ export function AboutUsScrollSection() {
       className="relative overflow-hidden bg-dusky-red-soft"
     >
       <Container className="section-y">
-        <div className="grid w-full items-center gap-10 lg:grid-cols-12 lg:gap-14">
-          <div className="lg:col-span-5">
-            <div
-              data-about-portrait
-              className="relative mx-auto aspect-[3/4] w-full max-w-sm overflow-hidden border border-dusky-red/20 bg-blue-900/5 lg:mx-0 lg:max-w-none"
-            >
-              <Image
-                src={IMAGES.founder.src}
-                alt={IMAGES.founder.alt}
-                fill
-                sizes="(max-width: 1024px) 90vw, 36vw"
-                className="object-cover object-center"
-              />
-            </div>
+        <div className="grid grid-cols-1 items-start gap-10 md:grid-cols-2 md:gap-12 lg:gap-16">
+          <div
+            data-about-portrait
+            className="relative aspect-[3/4] w-full overflow-hidden border border-dusky-red/20 bg-blue-900/5 md:sticky md:top-28"
+          >
+            <Image
+              src={IMAGES.founder.src}
+              alt={IMAGES.founder.alt}
+              fill
+              sizes="(max-width: 768px) 100vw, 42vw"
+              className="object-cover object-center"
+            />
           </div>
 
-          <div className="lg:col-span-7">
+          <div className="flex min-w-0 flex-col justify-center md:min-h-[28rem] lg:min-h-[32rem]">
             <div data-about-block>
               <p className="eyebrow-accent">{copy.eyebrow}</p>
-              <h2 className="display-title mt-4 text-display-lg">{copy.title}</h2>
+              <h2 className="display-title mt-3 text-display-lg md:mt-4">
+                {copy.title}
+              </h2>
               <span
-                className="mt-6 block h-1 w-24 bg-dusky-red"
+                className="mt-5 block h-1 w-20 bg-dusky-red md:mt-6 md:w-24"
                 aria-hidden
               />
             </div>
 
             <p
               data-about-block
-              className="mt-8 font-display text-lg font-semibold text-blue-900 md:text-xl"
+              className="mt-7 font-display text-lg font-semibold text-blue-900 md:mt-8 md:text-xl"
             >
               {copy.leadership}
             </p>
@@ -122,7 +122,7 @@ export function AboutUsScrollSection() {
               <p
                 key={paragraph}
                 data-about-block
-                className="mt-5 max-w-measure text-base leading-relaxed text-ink/80 md:text-lg"
+                className="mt-4 text-base leading-relaxed text-ink/80 md:mt-5 md:text-lg"
               >
                 {paragraph}
               </p>
@@ -130,7 +130,7 @@ export function AboutUsScrollSection() {
 
             <blockquote
               data-about-block
-              className="mt-10 border-l-2 border-dusky-red pl-5"
+              className="mt-8 border-l-2 border-dusky-red pl-5 md:mt-10"
             >
               <p className="font-display text-lg leading-snug text-blue-900 md:text-xl">
                 “{copy.quote}”
