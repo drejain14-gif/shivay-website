@@ -1,38 +1,48 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { useMotion } from "@/components/motion/MotionProvider";
 import { EVENT_ITEMS, EVENTS_PAGE } from "@/content/events";
 import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
 import { LAYOUT, Z_INDEX } from "@/lib/layout";
 import { MOTION } from "@/lib/motion";
-import { cn } from "@/lib/cn";
 
 /** Full-screen stack set — enough for motion, not the entire archive. */
 const STACK_ITEMS = EVENT_ITEMS.slice(0, 10);
 
 /**
  * Full-viewport stacked Events gallery.
- * Page scroll is consumed by a pinned ScrollTrigger: each next image
- * slides up from the bottom and covers the previous one.
+ * Pinned ScrollTrigger: each next image slides up from the bottom and
+ * covers the previous one. Transforms are owned by GSAP only (no React
+ * inline transforms) so re-renders cannot reset slide position.
  */
 export function EventsGallery() {
   const sectionRef = useRef<HTMLElement | null>(null);
   const stageRef = useRef<HTMLDivElement | null>(null);
-  const { scrollReady, refreshScroll } = useMotion();
+  const indexRef = useRef<HTMLSpanElement | null>(null);
+  const captionRef = useRef<HTMLParagraphElement | null>(null);
+  const dotsRef = useRef<HTMLDivElement | null>(null);
+  const { scrollReady, preloaderDone, refreshScroll } = useMotion();
   const { prefersReducedMotion } = usePrefersReducedMotion();
-  const [activeIndex, setActiveIndex] = useState(0);
-  const reduce = prefersReducedMotion || (typeof navigator !== "undefined" && navigator.webdriver);
-  const lastIndex = Math.max(STACK_ITEMS.length - 1, 1);
+  const reduce =
+    prefersReducedMotion ||
+    (typeof navigator !== "undefined" && navigator.webdriver);
 
   useEffect(() => {
-    if (!sectionRef.current || !stageRef.current || !scrollReady || reduce) {
+    if (!sectionRef.current || !stageRef.current || reduce) {
+      return;
+    }
+
+    // Wait until Lenis/preloader are ready when available; still boot if
+    // scrollReady is delayed so the stack is never permanently stuck.
+    if (!preloaderDone && !scrollReady) {
       return;
     }
 
     let cancelled = false;
     let revert: (() => void) | undefined;
+    let bootTimer: number | undefined;
 
     const run = async () => {
       const [{ default: gsap }, { ScrollTrigger }] = await Promise.all([
@@ -46,39 +56,65 @@ export function EventsGallery() {
       gsap.registerPlugin(ScrollTrigger);
 
       const section = sectionRef.current;
-      const panels = Array.from(
-        stageRef.current.querySelectorAll<HTMLElement>("[data-event-panel]"),
+      const panels = gsap.utils.toArray<HTMLElement>(
+        stageRef.current.querySelectorAll("[data-event-panel]"),
       );
+      const lastIndex = Math.max(panels.length - 1, 1);
+
+      const setActive = (index: number) => {
+        const safe = Math.min(Math.max(index, 0), lastIndex);
+        const item = STACK_ITEMS[safe];
+        if (indexRef.current) {
+          indexRef.current.textContent = `${String(safe + 1).padStart(2, "0")} / ${String(STACK_ITEMS.length).padStart(2, "0")}`;
+        }
+        if (captionRef.current && item) {
+          captionRef.current.textContent = item.alt;
+        }
+        if (dotsRef.current) {
+          const dots = dotsRef.current.querySelectorAll<HTMLElement>("[data-dot]");
+          dots.forEach((dot, i) => {
+            dot.setAttribute("aria-selected", i === safe ? "true" : "false");
+            dot.classList.toggle("w-8", i === safe);
+            dot.classList.toggle("bg-dusky-red", i === safe);
+            dot.classList.toggle("w-1.5", i !== safe);
+            dot.classList.toggle("bg-white/35", i !== safe);
+          });
+        }
+        panels.forEach((panel, i) => {
+          panel.setAttribute("aria-hidden", i === safe ? "false" : "true");
+        });
+      };
 
       const ctx = gsap.context(() => {
+        // GSAP owns transforms — never set them via React style.
+        gsap.set(panels, { force3D: true });
         panels.forEach((panel, index) => {
           gsap.set(panel, {
             yPercent: index === 0 ? 0 : 100,
             zIndex: index + 1,
-            force3D: true,
           });
         });
+        setActive(0);
 
         const tl = gsap.timeline({
           defaults: { ease: "none" },
           scrollTrigger: {
             trigger: section,
             start: "top top",
-            end: () =>
-              `+=${Math.max(STACK_ITEMS.length - 1, 1) * MOTION.events.scrubPerSlideVh}%`,
+            end: () => `+=${lastIndex * window.innerHeight}`,
             pin: true,
             scrub: MOTION.events.scrubSmooth,
             anticipatePin: 1,
             invalidateOnRefresh: true,
+            fastScrollEnd: true,
             id: "events-stack",
             snap: {
               snapTo: 1 / lastIndex,
-              duration: { min: 0.12, max: 0.35 },
+              duration: { min: 0.1, max: 0.3 },
               ease: "power1.inOut",
             },
             onUpdate: (self) => {
-              const index = Math.round(self.progress * lastIndex);
-              setActiveIndex(Math.min(Math.max(index, 0), lastIndex));
+              setActive(Math.round(self.progress * lastIndex));
             },
           },
         });
@@ -87,15 +123,7 @@ export function EventsGallery() {
           if (index === 0) {
             return;
           }
-          // Each panel rises from below and covers the one underneath.
-          tl.to(
-            panel,
-            {
-              yPercent: 0,
-              duration: 1,
-            },
-            index - 1,
-          );
+          tl.to(panel, { yPercent: 0, duration: 1 }, index - 1);
         });
       }, sectionRef);
 
@@ -104,19 +132,29 @@ export function EventsGallery() {
       const onReady = () => {
         pending -= 1;
         if (pending <= 0) {
+          ScrollTrigger.refresh();
           refreshScroll();
         }
       };
-      images.forEach((img) => {
-        if (img.complete) {
-          onReady();
-        } else {
-          img.addEventListener("load", onReady, { once: true });
-          img.addEventListener("error", onReady, { once: true });
-        }
-      });
+      if (pending === 0) {
+        ScrollTrigger.refresh();
+      } else {
+        images.forEach((img) => {
+          if (img.complete) {
+            onReady();
+          } else {
+            img.addEventListener("load", onReady, { once: true });
+            img.addEventListener("error", onReady, { once: true });
+          }
+        });
+      }
 
-      refreshScroll();
+      // Defer refresh so pin-spacer height is calculated after layout paint.
+      bootTimer = window.setTimeout(() => {
+        ScrollTrigger.refresh();
+        refreshScroll();
+      }, 80);
+
       revert = () => ctx.revert();
     };
 
@@ -124,9 +162,12 @@ export function EventsGallery() {
 
     return () => {
       cancelled = true;
+      if (bootTimer) {
+        window.clearTimeout(bootTimer);
+      }
       revert?.();
     };
-  }, [scrollReady, reduce, refreshScroll, lastIndex]);
+  }, [scrollReady, preloaderDone, reduce, refreshScroll]);
 
   if (reduce) {
     return (
@@ -159,8 +200,6 @@ export function EventsGallery() {
     );
   }
 
-  const active = STACK_ITEMS[activeIndex] ?? STACK_ITEMS[0];
-
   return (
     <section
       ref={sectionRef}
@@ -174,12 +213,9 @@ export function EventsGallery() {
           <figure
             key={item.id}
             data-event-panel
-            className="absolute inset-0 will-change-transform"
-            style={{
-              zIndex: index + 1,
-              transform: index === 0 ? undefined : "translate3d(0, 100%, 0)",
-            }}
-            aria-hidden={index !== activeIndex}
+            className="absolute inset-0 h-full w-full will-change-transform"
+            style={{ zIndex: index + 1 }}
+            aria-hidden={index !== 0}
           >
             <Image
               src={item.src}
@@ -195,37 +231,40 @@ export function EventsGallery() {
       </div>
 
       <div
-        className="pointer-events-none absolute inset-x-0 top-0 z-20"
+        className="pointer-events-none absolute inset-x-0 top-0"
         style={{ paddingTop: LAYOUT.headerHeight, zIndex: Z_INDEX.overlay }}
       >
-        <div className="mx-auto flex w-full max-w-container items-end justify-between gap-6 px-5 pb-0 pt-8 md:px-8 md:pt-10">
-          <div className="max-w-2xl">
-            <p className="font-mono text-[0.65rem] uppercase tracking-[0.2em] text-white/60">
-              {EVENTS_PAGE.eyebrow}
-            </p>
-            <h1 className="mt-2 font-display text-display-md text-white md:text-display-lg">
-              {EVENTS_PAGE.title}
-            </h1>
-          </div>
+        <div className="mx-auto w-full max-w-container px-5 pt-8 md:px-8 md:pt-10">
+          <p className="font-mono text-[0.65rem] uppercase tracking-[0.2em] text-white/60">
+            {EVENTS_PAGE.eyebrow}
+          </p>
+          <h1 className="mt-2 max-w-2xl font-display text-display-md text-white md:text-display-lg">
+            {EVENTS_PAGE.title}
+          </h1>
         </div>
       </div>
 
       <div
-        className="absolute inset-x-0 bottom-0 z-20"
+        className="absolute inset-x-0 bottom-0"
         style={{ zIndex: Z_INDEX.overlay }}
       >
         <div className="mx-auto flex w-full max-w-container flex-wrap items-end justify-between gap-4 px-5 pb-8 md:px-8 md:pb-10">
           <div aria-live="polite" className="min-w-0">
             <p className="font-mono text-[0.65rem] uppercase tracking-[0.16em] text-white/55">
-              {String(activeIndex + 1).padStart(2, "0")} /{" "}
-              {String(STACK_ITEMS.length).padStart(2, "0")}
+              <span ref={indexRef}>
+                01 / {String(STACK_ITEMS.length).padStart(2, "0")}
+              </span>
             </p>
-            <p className="mt-2 max-w-xl text-sm text-white/85 md:text-base">
-              {active.alt}
+            <p
+              ref={captionRef}
+              className="mt-2 max-w-xl text-sm text-white/85 md:text-base"
+            >
+              {STACK_ITEMS[0]?.alt}
             </p>
           </div>
 
           <div
+            ref={dotsRef}
             className="flex items-center gap-1.5"
             role="tablist"
             aria-label="Event slides"
@@ -233,14 +272,14 @@ export function EventsGallery() {
             {STACK_ITEMS.map((item, index) => (
               <span
                 key={item.id}
+                data-dot
                 role="tab"
-                aria-selected={index === activeIndex}
-                className={cn(
-                  "h-1 rounded-full transition-[width,background-color] duration-hover",
-                  index === activeIndex
-                    ? "w-8 bg-dusky-red"
-                    : "w-1.5 bg-white/35",
-                )}
+                aria-selected={index === 0}
+                className={
+                  index === 0
+                    ? "h-1 w-8 rounded-full bg-dusky-red transition-[width,background-color] duration-hover"
+                    : "h-1 w-1.5 rounded-full bg-white/35 transition-[width,background-color] duration-hover"
+                }
               />
             ))}
           </div>
