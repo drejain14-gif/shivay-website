@@ -4,7 +4,7 @@ import { useEffect, useRef } from "react";
 import { cn } from "@/lib/cn";
 import { MOTION } from "@/lib/motion";
 import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
-import { useMotion } from "@/components/motion/MotionProvider";
+import { useSectionObserver } from "@/hooks/useSectionObserver";
 
 type RevealProps = Readonly<{
   children: React.ReactNode;
@@ -13,6 +13,10 @@ type RevealProps = Readonly<{
   delay?: number;
 }>;
 
+/**
+ * IntersectionObserver reveal — content stays readable; motion is progressive.
+ * Fail-safe makes content visible if observation stalls.
+ */
 export function Reveal({
   children,
   className,
@@ -20,81 +24,62 @@ export function Reveal({
   delay = 0,
 }: RevealProps) {
   const ref = useRef<HTMLDivElement | null>(null);
-  const { prefersReducedMotion } = usePrefersReducedMotion();
-  const { scrollReady } = useMotion();
+  const playedRef = useRef(false);
+  const { prefersReducedMotion, ready } = usePrefersReducedMotion();
+  const reduce =
+    prefersReducedMotion || (typeof navigator !== "undefined" && navigator.webdriver);
+  const visible = useSectionObserver(ref, {
+    enabled: ready && !reduce,
+    rootMargin: "0px 0px -8% 0px",
+    threshold: 0.12,
+  });
 
   useEffect(() => {
     const el = ref.current;
-    if (!el) {
+    if (!el || reduce || !visible || playedRef.current) {
       return;
     }
 
-    if (prefersReducedMotion || navigator.webdriver) {
-      el.style.opacity = "1";
-      el.style.transform = "none";
-      return;
-    }
-
-    if (!scrollReady) {
-      return;
-    }
-
+    playedRef.current = true;
     let cancelled = false;
-    let revert: (() => void) | undefined;
+    let tween: { kill: () => void } | undefined;
 
     const run = async () => {
-      const [{ default: gsap }, { ScrollTrigger }] = await Promise.all([
-        import("gsap"),
-        import("gsap/ScrollTrigger"),
-      ]);
+      const { default: gsap } = await import("gsap");
       if (cancelled || !ref.current) {
         return;
       }
-
-      gsap.registerPlugin(ScrollTrigger);
-      const ctx = gsap.context(() => {
-        if (!ref.current) {
-          return;
-        }
-        gsap.fromTo(
-          ref.current,
-          { opacity: 0, y: MOTION.reveal.y },
-          {
-            opacity: 1,
-            y: 0,
-            duration: MOTION.duration.base,
-            delay,
-            ease: MOTION.ease.out,
-            scrollTrigger: {
-              trigger: ref.current,
-              start: "top 88%",
-              toggleActions: "play none none none",
-              once: true,
-            },
-          },
-        );
-      }, ref);
-
-      ScrollTrigger.refresh();
-      revert = () => ctx.revert();
+      tween = gsap.fromTo(
+        ref.current,
+        { opacity: 0.01, y: MOTION.reveal.y },
+        {
+          opacity: 1,
+          y: 0,
+          duration: MOTION.duration.fast,
+          delay,
+          ease: MOTION.ease.out,
+          overwrite: "auto",
+          clearProps: "transform",
+        },
+      );
     };
 
     void run();
 
     return () => {
       cancelled = true;
-      revert?.();
+      tween?.kill();
     };
-  }, [scrollReady, prefersReducedMotion, delay]);
+  }, [visible, reduce, delay]);
 
   return (
     <Tag
       ref={ref as never}
       className={cn(className)}
       style={
-        prefersReducedMotion
+        reduce || visible
           ? undefined
-          : { opacity: 0, willChange: "opacity, transform" }
+          : { opacity: 0.01, willChange: "opacity, transform" }
       }
     >
       {children}

@@ -48,8 +48,8 @@ export default function AboutPage() {
             </p>
           </div>
           <SiteImageView
-            image={IMAGES.aboutField}
-            className="media-frame aspect-[4/5] w-full"
+            image={IMAGES.founder}
+            className="media-frame aspect-[3/4] w-full"
             fill
             sizes="(max-width: 768px) 100vw, 50vw"
           />

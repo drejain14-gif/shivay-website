@@ -96,6 +96,7 @@ export function HeroSection() {
   return (
     <section
       ref={rootRef}
+      data-header-tone="dark"
       className="relative flex items-end overflow-hidden bg-blue-900 text-white"
       style={{ minHeight: LAYOUT.heroMinHeight }}
     >

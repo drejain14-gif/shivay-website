@@ -32,9 +32,9 @@ export const IMAGES = {
   founder: {
     id: "founder",
     src: "/img/founder.jpg",
-    alt: "Er. Vibhor Kulshrestha, Quality Manager at Shivaay Technocrat Service",
-    width: 1200,
-    height: 1600,
+    alt: "Shivaay Technocrat Service team at exhibition booth with founder profile",
+    width: 3120,
+    height: 4160,
   },
   about: {
     id: "about",
