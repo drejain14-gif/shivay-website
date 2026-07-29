@@ -33,8 +33,8 @@ export const MOTION = {
     mediaScaleTo: 1,
   },
   events: {
-    /** Extra scroll distance while the gallery is pinned (viewport heights). */
-    scrubEndVh: 320,
+    /** Viewport-height scroll distance per stacked slide. */
+    scrubPerSlideVh: 100,
     scrubSmooth: 0.55,
     stagger: 0.14,
   },

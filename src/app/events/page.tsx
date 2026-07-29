@@ -1,7 +1,5 @@
 import type { Metadata } from "next";
 import { EventsGallery } from "@/components/sections/EventsGallery";
-import { PageHero } from "@/components/ui/PageHero";
-import { EVENTS_PAGE } from "@/content/events";
 
 export const metadata: Metadata = {
   title: "Events & Gallery",
@@ -10,14 +8,5 @@ export const metadata: Metadata = {
 };
 
 export default function EventsPage() {
-  return (
-    <>
-      <PageHero
-        eyebrow={EVENTS_PAGE.eyebrow}
-        title={EVENTS_PAGE.title}
-        description={EVENTS_PAGE.lede}
-      />
-      <EventsGallery />
-    </>
-  );
+  return <EventsGallery />;
 }

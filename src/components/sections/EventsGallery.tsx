@@ -1,34 +1,33 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useMotion } from "@/components/motion/MotionProvider";
-import { EVENT_ITEMS } from "@/content/events";
+import { EVENT_ITEMS, EVENTS_PAGE } from "@/content/events";
 import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
-import { LAYOUT } from "@/lib/layout";
+import { LAYOUT, Z_INDEX } from "@/lib/layout";
 import { MOTION } from "@/lib/motion";
+import { cn } from "@/lib/cn";
 
-/** Curated set for the pinned scrub stage (keeps motion readable). */
-const SCRUB_ITEMS = EVENT_ITEMS.slice(0, 9);
+/** Full-screen stack set — enough for motion, not the entire archive. */
+const STACK_ITEMS = EVENT_ITEMS.slice(0, 10);
 
 /**
- * Pinned Events gallery: vertical scroll drives images rising from bottom
- * to their grid seats with a staggered scrub timeline.
+ * Full-viewport stacked Events gallery.
+ * Page scroll is consumed by a pinned ScrollTrigger: each next image
+ * slides up from the bottom and covers the previous one.
  */
 export function EventsGallery() {
   const sectionRef = useRef<HTMLElement | null>(null);
   const stageRef = useRef<HTMLDivElement | null>(null);
   const { scrollReady, refreshScroll } = useMotion();
   const { prefersReducedMotion } = usePrefersReducedMotion();
+  const [activeIndex, setActiveIndex] = useState(0);
+  const reduce = prefersReducedMotion || (typeof navigator !== "undefined" && navigator.webdriver);
+  const lastIndex = Math.max(STACK_ITEMS.length - 1, 1);
 
   useEffect(() => {
-    if (
-      !sectionRef.current ||
-      !stageRef.current ||
-      !scrollReady ||
-      prefersReducedMotion ||
-      navigator.webdriver
-    ) {
+    if (!sectionRef.current || !stageRef.current || !scrollReady || reduce) {
       return;
     }
 
@@ -47,36 +46,59 @@ export function EventsGallery() {
       gsap.registerPlugin(ScrollTrigger);
 
       const section = sectionRef.current;
-      const cards = stageRef.current.querySelectorAll<HTMLElement>(
-        "[data-event-card]",
+      const panels = Array.from(
+        stageRef.current.querySelectorAll<HTMLElement>("[data-event-panel]"),
       );
 
       const ctx = gsap.context(() => {
-        gsap.set(cards, {
-          yPercent: 115,
-          opacity: 0.15,
-          force3D: true,
+        panels.forEach((panel, index) => {
+          gsap.set(panel, {
+            yPercent: index === 0 ? 0 : 100,
+            zIndex: index + 1,
+            force3D: true,
+          });
         });
 
-        gsap.to(cards, {
-          yPercent: 0,
-          opacity: 1,
-          ease: "none",
-          stagger: MOTION.events.stagger,
+        const tl = gsap.timeline({
+          defaults: { ease: "none" },
           scrollTrigger: {
             trigger: section,
             start: "top top",
-            end: () => `+=${MOTION.events.scrubEndVh}%`,
+            end: () =>
+              `+=${Math.max(STACK_ITEMS.length - 1, 1) * MOTION.events.scrubPerSlideVh}%`,
             pin: true,
             scrub: MOTION.events.scrubSmooth,
             anticipatePin: 1,
             invalidateOnRefresh: true,
-            id: "events-scrub-gallery",
+            id: "events-stack",
+            snap: {
+              snapTo: 1 / lastIndex,
+              duration: { min: 0.12, max: 0.35 },
+              ease: "power1.inOut",
+            },
+            onUpdate: (self) => {
+              const index = Math.round(self.progress * lastIndex);
+              setActiveIndex(Math.min(Math.max(index, 0), lastIndex));
+            },
           },
+        });
+
+        panels.forEach((panel, index) => {
+          if (index === 0) {
+            return;
+          }
+          // Each panel rises from below and covers the one underneath.
+          tl.to(
+            panel,
+            {
+              yPercent: 0,
+              duration: 1,
+            },
+            index - 1,
+          );
         });
       }, sectionRef);
 
-      // Images may still be decoding — refresh pin distances once loaded.
       const images = stageRef.current.querySelectorAll("img");
       let pending = images.length;
       const onReady = () => {
@@ -104,67 +126,124 @@ export function EventsGallery() {
       cancelled = true;
       revert?.();
     };
-  }, [scrollReady, prefersReducedMotion, refreshScroll]);
+  }, [scrollReady, reduce, refreshScroll, lastIndex]);
+
+  if (reduce) {
+    return (
+      <section
+        data-header-tone="light"
+        className="bg-white"
+        aria-label="Events gallery"
+      >
+        <div className="border-b border-line bg-blue-900 px-5 py-16 text-white md:px-8">
+          <p className="font-mono text-[0.65rem] uppercase tracking-[0.2em] text-white/55">
+            {EVENTS_PAGE.eyebrow}
+          </p>
+          <h1 className="mt-3 font-display text-display-lg">{EVENTS_PAGE.title}</h1>
+          <p className="mt-4 max-w-measure text-white/75">{EVENTS_PAGE.lede}</p>
+        </div>
+        <ul>
+          {STACK_ITEMS.map((item) => (
+            <li key={item.id} className="relative h-[100svh] w-full">
+              <Image
+                src={item.src}
+                alt={item.alt}
+                fill
+                sizes="100vw"
+                className="object-cover"
+              />
+            </li>
+          ))}
+        </ul>
+      </section>
+    );
+  }
+
+  const active = STACK_ITEMS[activeIndex] ?? STACK_ITEMS[0];
 
   return (
     <section
       ref={sectionRef}
       data-header-tone="dark"
-      className="relative overflow-hidden bg-blue-900 text-white"
-      style={{ minHeight: LAYOUT.heroMinHeight }}
-      aria-label="Events gallery scroll stage"
+      className="relative h-[100svh] overflow-hidden bg-blue-900 text-white"
+      aria-roledescription="carousel"
+      aria-label="Events gallery stack"
     >
-      <div
-        className="pointer-events-none absolute inset-0 opacity-40"
-        aria-hidden
-        style={{
-          backgroundImage:
-            "radial-gradient(circle at 15% 20%, #134a8a 0%, transparent 42%), radial-gradient(circle at 85% 80%, #8b3a42 0%, transparent 38%)",
-        }}
-      />
+      <div ref={stageRef} className="absolute inset-0">
+        {STACK_ITEMS.map((item, index) => (
+          <figure
+            key={item.id}
+            data-event-panel
+            className="absolute inset-0 will-change-transform"
+            style={{
+              zIndex: index + 1,
+              transform: index === 0 ? undefined : "translate3d(0, 100%, 0)",
+            }}
+            aria-hidden={index !== activeIndex}
+          >
+            <Image
+              src={item.src}
+              alt={item.alt}
+              fill
+              sizes="100vw"
+              priority={index < 2}
+              className="object-cover object-center"
+            />
+            <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-blue-900/80 via-blue-900/15 to-blue-900/45" />
+          </figure>
+        ))}
+      </div>
 
       <div
-        className="relative mx-auto flex h-[100svh] w-full max-w-container flex-col px-5 md:px-8"
-        style={{ paddingTop: LAYOUT.headerHeight }}
+        className="pointer-events-none absolute inset-x-0 top-0 z-20"
+        style={{ paddingTop: LAYOUT.headerHeight, zIndex: Z_INDEX.overlay }}
       >
-        <div className="shrink-0 pb-4 pt-6 md:pb-5 md:pt-8">
-          <p className="font-mono text-[0.65rem] uppercase tracking-[0.2em] text-white/55">
-            Scroll to reveal
-          </p>
-          <h2 className="mt-2 font-display text-display-md text-white md:text-display-lg">
-            Events in motion
-          </h2>
+        <div className="mx-auto flex w-full max-w-container items-end justify-between gap-6 px-5 pb-0 pt-8 md:px-8 md:pt-10">
+          <div className="max-w-2xl">
+            <p className="font-mono text-[0.65rem] uppercase tracking-[0.2em] text-white/60">
+              {EVENTS_PAGE.eyebrow}
+            </p>
+            <h1 className="mt-2 font-display text-display-md text-white md:text-display-lg">
+              {EVENTS_PAGE.title}
+            </h1>
+          </div>
         </div>
+      </div>
 
-        <div
-          ref={stageRef}
-          className="grid min-h-0 flex-1 grid-cols-2 grid-rows-5 gap-2.5 pb-6 md:grid-cols-3 md:grid-rows-3 md:gap-3 md:pb-8"
-        >
-          {SCRUB_ITEMS.map((item, index) => (
-            <figure
-              key={item.id}
-              data-event-card
-              className="relative h-full min-h-0 overflow-hidden border border-white/15 bg-blue-900/40 will-change-transform"
-              style={
-                prefersReducedMotion
-                  ? undefined
-                  : {
-                      transform: "translate3d(0, 115%, 0)",
-                      opacity: 0.15,
-                    }
-              }
-            >
-              <Image
-                src={item.src}
-                alt={item.alt}
-                fill
-                sizes="(max-width: 768px) 50vw, 33vw"
-                className="object-cover object-center"
-                priority={index < 3}
+      <div
+        className="absolute inset-x-0 bottom-0 z-20"
+        style={{ zIndex: Z_INDEX.overlay }}
+      >
+        <div className="mx-auto flex w-full max-w-container flex-wrap items-end justify-between gap-4 px-5 pb-8 md:px-8 md:pb-10">
+          <div aria-live="polite" className="min-w-0">
+            <p className="font-mono text-[0.65rem] uppercase tracking-[0.16em] text-white/55">
+              {String(activeIndex + 1).padStart(2, "0")} /{" "}
+              {String(STACK_ITEMS.length).padStart(2, "0")}
+            </p>
+            <p className="mt-2 max-w-xl text-sm text-white/85 md:text-base">
+              {active.alt}
+            </p>
+          </div>
+
+          <div
+            className="flex items-center gap-1.5"
+            role="tablist"
+            aria-label="Event slides"
+          >
+            {STACK_ITEMS.map((item, index) => (
+              <span
+                key={item.id}
+                role="tab"
+                aria-selected={index === activeIndex}
+                className={cn(
+                  "h-1 rounded-full transition-[width,background-color] duration-hover",
+                  index === activeIndex
+                    ? "w-8 bg-dusky-red"
+                    : "w-1.5 bg-white/35",
+                )}
               />
-              <figcaption className="sr-only">{item.alt}</figcaption>
-            </figure>
-          ))}
+            ))}
+          </div>
         </div>
       </div>
     </section>
