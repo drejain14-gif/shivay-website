@@ -34,8 +34,8 @@ export const MOTION = {
   },
   events: {
     /** Viewport-height scroll distance per stacked slide. */
-    scrubPerSlideVh: 100,
-    scrubSmooth: 0.55,
+    scrubPerSlideVh: 110,
+    scrubSmooth: 0.7,
     stagger: 0.14,
   },
 } as const;

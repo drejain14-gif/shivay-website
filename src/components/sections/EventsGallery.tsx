@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { useEffect, useRef } from "react";
 import { useMotion } from "@/components/motion/MotionProvider";
 import { EVENT_ITEMS, EVENTS_PAGE } from "@/content/events";
@@ -12,10 +13,8 @@ import { MOTION } from "@/lib/motion";
 const STACK_ITEMS = EVENT_ITEMS.slice(0, 10);
 
 /**
- * Full-viewport stacked Events gallery.
- * Pinned ScrollTrigger: each next image slides up from the bottom and
- * covers the previous one. Transforms are owned by GSAP only (no React
- * inline transforms) so re-renders cannot reset slide position.
+ * Padded, rounded full-width Events stack.
+ * Scroll fades + lifts each next frame over the previous one.
  */
 export function EventsGallery() {
   const sectionRef = useRef<HTMLElement | null>(null);
@@ -33,9 +32,6 @@ export function EventsGallery() {
     if (!sectionRef.current || !stageRef.current || reduce) {
       return;
     }
-
-    // Wait until Lenis/preloader are ready when available; still boot if
-    // scrollReady is delayed so the stack is never permanently stuck.
     if (!preloaderDone && !scrollReady) {
       return;
     }
@@ -71,14 +67,16 @@ export function EventsGallery() {
           captionRef.current.textContent = item.alt;
         }
         if (dotsRef.current) {
-          const dots = dotsRef.current.querySelectorAll<HTMLElement>("[data-dot]");
-          dots.forEach((dot, i) => {
-            dot.setAttribute("aria-selected", i === safe ? "true" : "false");
-            dot.classList.toggle("w-8", i === safe);
-            dot.classList.toggle("bg-dusky-red", i === safe);
-            dot.classList.toggle("w-1.5", i !== safe);
-            dot.classList.toggle("bg-white/35", i !== safe);
-          });
+          dotsRef.current
+            .querySelectorAll<HTMLElement>("[data-dot]")
+            .forEach((dot, i) => {
+              const on = i === safe;
+              dot.setAttribute("aria-selected", on ? "true" : "false");
+              dot.classList.toggle("w-9", on);
+              dot.classList.toggle("bg-dusky-red", on);
+              dot.classList.toggle("w-2", !on);
+              dot.classList.toggle("bg-white/30", !on);
+            });
         }
         panels.forEach((panel, i) => {
           panel.setAttribute("aria-hidden", i === safe ? "false" : "true");
@@ -86,11 +84,12 @@ export function EventsGallery() {
       };
 
       const ctx = gsap.context(() => {
-        // GSAP owns transforms — never set them via React style.
-        gsap.set(panels, { force3D: true });
+        gsap.set(panels, { force3D: true, transformOrigin: "50% 50%" });
         panels.forEach((panel, index) => {
           gsap.set(panel, {
-            yPercent: index === 0 ? 0 : 100,
+            yPercent: index === 0 ? 0 : 28,
+            opacity: index === 0 ? 1 : 0,
+            scale: index === 0 ? 1 : 0.965,
             zIndex: index + 1,
           });
         });
@@ -101,7 +100,8 @@ export function EventsGallery() {
           scrollTrigger: {
             trigger: section,
             start: "top top",
-            end: () => `+=${lastIndex * window.innerHeight}`,
+            end: () =>
+              `+=${lastIndex * window.innerHeight * (MOTION.events.scrubPerSlideVh / 100)}`,
             pin: true,
             scrub: MOTION.events.scrubSmooth,
             anticipatePin: 1,
@@ -110,7 +110,7 @@ export function EventsGallery() {
             id: "events-stack",
             snap: {
               snapTo: 1 / lastIndex,
-              duration: { min: 0.1, max: 0.3 },
+              duration: { min: 0.12, max: 0.32 },
               ease: "power1.inOut",
             },
             onUpdate: (self) => {
@@ -123,7 +123,22 @@ export function EventsGallery() {
           if (index === 0) {
             return;
           }
-          tl.to(panel, { yPercent: 0, duration: 1 }, index - 1);
+          const prev = panels[index - 1];
+          // Incoming: fade + lift into place
+          tl.fromTo(
+            panel,
+            { yPercent: 28, opacity: 0, scale: 0.965 },
+            { yPercent: 0, opacity: 1, scale: 1, duration: 1 },
+            index - 1,
+          );
+          // Outgoing: soft fade / settle behind
+          if (prev) {
+            tl.to(
+              prev,
+              { opacity: 0.35, scale: 0.97, duration: 1 },
+              index - 1,
+            );
+          }
         });
       }, sectionRef);
 
@@ -149,7 +164,6 @@ export function EventsGallery() {
         });
       }
 
-      // Defer refresh so pin-spacer height is calculated after layout paint.
       bootTimer = window.setTimeout(() => {
         ScrollTrigger.refresh();
         refreshScroll();
@@ -173,19 +187,22 @@ export function EventsGallery() {
     return (
       <section
         data-header-tone="light"
-        className="bg-white"
+        className="bg-slate-50"
         aria-label="Events gallery"
       >
-        <div className="border-b border-line bg-blue-900 px-5 py-16 text-white md:px-8">
-          <p className="font-mono text-[0.65rem] uppercase tracking-[0.2em] text-white/55">
-            {EVENTS_PAGE.eyebrow}
-          </p>
-          <h1 className="mt-3 font-display text-display-lg">{EVENTS_PAGE.title}</h1>
-          <p className="mt-4 max-w-measure text-white/75">{EVENTS_PAGE.lede}</p>
+        <div className="mx-auto max-w-container px-5 py-16 md:px-8 md:py-20">
+          <p className="eyebrow-accent">{EVENTS_PAGE.eyebrow}</p>
+          <h1 className="display-title mt-3 text-display-lg">
+            {EVENTS_PAGE.title}
+          </h1>
+          <p className="lede mt-4">{EVENTS_PAGE.lede}</p>
         </div>
-        <ul>
+        <ul className="mx-auto flex max-w-container flex-col gap-6 px-5 pb-16 md:px-8">
           {STACK_ITEMS.map((item) => (
-            <li key={item.id} className="relative h-[100svh] w-full">
+            <li
+              key={item.id}
+              className="relative aspect-[16/10] w-full overflow-hidden rounded-2xl border border-line"
+            >
               <Image
                 src={item.src}
                 alt={item.alt}
@@ -204,53 +221,76 @@ export function EventsGallery() {
     <section
       ref={sectionRef}
       data-header-tone="dark"
-      className="relative h-[100svh] overflow-hidden bg-blue-900 text-white"
+      className="relative h-[100svh] overflow-hidden bg-[#071828] text-white"
       aria-roledescription="carousel"
       aria-label="Events gallery stack"
     >
-      <div ref={stageRef} className="absolute inset-0">
-        {STACK_ITEMS.map((item, index) => (
-          <figure
-            key={item.id}
-            data-event-panel
-            className="absolute inset-0 h-full w-full will-change-transform"
-            style={{ zIndex: index + 1 }}
-            aria-hidden={index !== 0}
-          >
-            <Image
-              src={item.src}
-              alt={item.alt}
-              fill
-              sizes="100vw"
-              priority={index < 2}
-              className="object-cover object-center"
-            />
-            <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-blue-900/80 via-blue-900/15 to-blue-900/45" />
-          </figure>
-        ))}
-      </div>
+      <div
+        className="pointer-events-none absolute inset-0 opacity-70"
+        aria-hidden
+        style={{
+          backgroundImage:
+            "radial-gradient(ellipse 70% 55% at 12% 18%, rgb(19 74 138 / 55%), transparent 55%), radial-gradient(ellipse 55% 45% at 88% 78%, rgb(139 58 66 / 28%), transparent 50%)",
+        }}
+      />
 
       <div
-        className="pointer-events-none absolute inset-x-0 top-0"
-        style={{ paddingTop: LAYOUT.headerHeight, zIndex: Z_INDEX.overlay }}
+        className="relative mx-auto flex h-full w-full max-w-[90rem] flex-col px-4 md:px-8 lg:px-12"
+        style={{
+          paddingTop: `calc(${LAYOUT.headerHeight} + 1.25rem)`,
+          paddingBottom: "1.25rem",
+        }}
       >
-        <div className="mx-auto w-full max-w-container px-5 pt-8 md:px-8 md:pt-10">
-          <p className="font-mono text-[0.65rem] uppercase tracking-[0.2em] text-white/60">
-            {EVENTS_PAGE.eyebrow}
+        <header className="relative mb-4 flex shrink-0 flex-wrap items-end justify-between gap-4 md:mb-5">
+          <div className="max-w-2xl">
+            <p className="font-mono text-[0.65rem] uppercase tracking-[0.2em] text-white/55">
+              {EVENTS_PAGE.eyebrow}
+            </p>
+            <h1 className="mt-2 font-display text-display-md text-white md:text-display-lg">
+              {EVENTS_PAGE.title}
+            </h1>
+            <p className="mt-3 max-w-xl text-sm leading-relaxed text-white/65 md:text-base">
+              {EVENTS_PAGE.lede}
+            </p>
+          </div>
+          <p className="font-mono text-[0.65rem] uppercase tracking-[0.16em] text-white/45">
+            Scroll to advance
           </p>
-          <h1 className="mt-2 max-w-2xl font-display text-display-md text-white md:text-display-lg">
-            {EVENTS_PAGE.title}
-          </h1>
-        </div>
-      </div>
+        </header>
 
-      <div
-        className="absolute inset-x-0 bottom-0"
-        style={{ zIndex: Z_INDEX.overlay }}
-      >
-        <div className="mx-auto flex w-full max-w-container flex-wrap items-end justify-between gap-4 px-5 pb-8 md:px-8 md:pb-10">
+        <div className="relative min-h-0 flex-1">
+          <div
+            ref={stageRef}
+            className="absolute inset-0 overflow-hidden rounded-2xl border border-white/12 bg-blue-900/40 shadow-[0_30px_80px_-40px_rgba(0,0,0,0.75)]"
+          >
+            {STACK_ITEMS.map((item, index) => (
+              <figure
+                key={item.id}
+                data-event-panel
+                className="absolute inset-0 h-full w-full overflow-hidden will-change-transform"
+                style={{ zIndex: index + 1 }}
+                aria-hidden={index !== 0}
+              >
+                <Image
+                  src={item.src}
+                  alt={item.alt}
+                  fill
+                  sizes="(max-width: 768px) 100vw, 90vw"
+                  priority={index < 2}
+                  className="object-cover object-center"
+                />
+                <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#071828]/75 via-transparent to-[#071828]/25" />
+              </figure>
+            ))}
+          </div>
+        </div>
+
+        <div
+          className="relative mt-4 flex shrink-0 flex-wrap items-end justify-between gap-4 md:mt-5"
+          style={{ zIndex: Z_INDEX.overlay }}
+        >
           <div aria-live="polite" className="min-w-0">
-            <p className="font-mono text-[0.65rem] uppercase tracking-[0.16em] text-white/55">
+            <p className="font-mono text-[0.65rem] uppercase tracking-[0.16em] text-white/50">
               <span ref={indexRef}>
                 01 / {String(STACK_ITEMS.length).padStart(2, "0")}
               </span>
@@ -263,25 +303,33 @@ export function EventsGallery() {
             </p>
           </div>
 
-          <div
-            ref={dotsRef}
-            className="flex items-center gap-1.5"
-            role="tablist"
-            aria-label="Event slides"
-          >
-            {STACK_ITEMS.map((item, index) => (
-              <span
-                key={item.id}
-                data-dot
-                role="tab"
-                aria-selected={index === 0}
-                className={
-                  index === 0
-                    ? "h-1 w-8 rounded-full bg-dusky-red transition-[width,background-color] duration-hover"
-                    : "h-1 w-1.5 rounded-full bg-white/35 transition-[width,background-color] duration-hover"
-                }
-              />
-            ))}
+          <div className="flex flex-col items-end gap-3">
+            <div
+              ref={dotsRef}
+              className="flex items-center gap-1.5"
+              role="tablist"
+              aria-label="Event slides"
+            >
+              {STACK_ITEMS.map((item, index) => (
+                <span
+                  key={item.id}
+                  data-dot
+                  role="tab"
+                  aria-selected={index === 0}
+                  className={
+                    index === 0
+                      ? "h-1.5 w-9 rounded-full bg-dusky-red transition-[width,background-color] duration-hover"
+                      : "h-1.5 w-2 rounded-full bg-white/30 transition-[width,background-color] duration-hover"
+                  }
+                />
+              ))}
+            </div>
+            <Link
+              href="/contact"
+              className="inline-flex min-h-11 items-center rounded-sm bg-dusky-red px-5 text-sm font-medium text-white transition-colors duration-hover hover:bg-[#7a3239]"
+            >
+              Plan a site visit
+            </Link>
           </div>
         </div>
       </div>
