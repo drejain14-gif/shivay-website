@@ -9,12 +9,11 @@ import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
 import { LAYOUT, Z_INDEX } from "@/lib/layout";
 import { MOTION } from "@/lib/motion";
 
-/** Full-screen stack set — enough for motion, not the entire archive. */
-const STACK_ITEMS = EVENT_ITEMS.slice(0, 10);
+/** Images shown in the shared rounded frame. */
+const FRAME_ITEMS = EVENT_ITEMS.slice(0, 10);
 
 /**
- * Padded, rounded full-width Events stack.
- * Scroll fades + lifts each next frame over the previous one.
+ * One padded rounded container; scroll crossfades a new image inside it.
  */
 export function EventsGallery() {
   const sectionRef = useRef<HTMLElement | null>(null);
@@ -59,9 +58,9 @@ export function EventsGallery() {
 
       const setActive = (index: number) => {
         const safe = Math.min(Math.max(index, 0), lastIndex);
-        const item = STACK_ITEMS[safe];
+        const item = FRAME_ITEMS[safe];
         if (indexRef.current) {
-          indexRef.current.textContent = `${String(safe + 1).padStart(2, "0")} / ${String(STACK_ITEMS.length).padStart(2, "0")}`;
+          indexRef.current.textContent = `${String(safe + 1).padStart(2, "0")} / ${String(FRAME_ITEMS.length).padStart(2, "0")}`;
         }
         if (captionRef.current && item) {
           captionRef.current.textContent = item.alt;
@@ -84,14 +83,18 @@ export function EventsGallery() {
       };
 
       const ctx = gsap.context(() => {
-        gsap.set(panels, { force3D: true, transformOrigin: "50% 50%" });
+        // Same frame: all images layered; only opacity changes.
+        gsap.set(panels, {
+          position: "absolute",
+          inset: 0,
+          opacity: 0,
+          force3D: true,
+        });
+        gsap.set(panels[0], { opacity: 1, zIndex: 2 });
         panels.forEach((panel, index) => {
-          gsap.set(panel, {
-            yPercent: index === 0 ? 0 : 28,
-            opacity: index === 0 ? 1 : 0,
-            scale: index === 0 ? 1 : 0.965,
-            zIndex: index + 1,
-          });
+          if (index > 0) {
+            gsap.set(panel, { zIndex: 1 });
+          }
         });
         setActive(0);
 
@@ -107,7 +110,7 @@ export function EventsGallery() {
             anticipatePin: 1,
             invalidateOnRefresh: true,
             fastScrollEnd: true,
-            id: "events-stack",
+            id: "events-crossfade",
             snap: {
               snapTo: 1 / lastIndex,
               duration: { min: 0.12, max: 0.32 },
@@ -119,25 +122,21 @@ export function EventsGallery() {
           },
         });
 
+        // Crossfade inside the same container: current fades out, next fades in.
         panels.forEach((panel, index) => {
           if (index === 0) {
             return;
           }
           const prev = panels[index - 1];
-          // Incoming: fade + lift into place
+          tl.set(panel, { zIndex: index + 2 }, index - 1);
           tl.fromTo(
             panel,
-            { yPercent: 28, opacity: 0, scale: 0.965 },
-            { yPercent: 0, opacity: 1, scale: 1, duration: 1 },
+            { opacity: 0 },
+            { opacity: 1, duration: 1 },
             index - 1,
           );
-          // Outgoing: soft fade / settle behind
           if (prev) {
-            tl.to(
-              prev,
-              { opacity: 0.35, scale: 0.97, duration: 1 },
-              index - 1,
-            );
+            tl.to(prev, { opacity: 0, duration: 1 }, index - 1);
           }
         });
       }, sectionRef);
@@ -198,7 +197,7 @@ export function EventsGallery() {
           <p className="lede mt-4">{EVENTS_PAGE.lede}</p>
         </div>
         <ul className="mx-auto flex max-w-container flex-col gap-6 px-5 pb-16 md:px-8">
-          {STACK_ITEMS.map((item) => (
+          {FRAME_ITEMS.map((item) => (
             <li
               key={item.id}
               className="relative aspect-[16/10] w-full overflow-hidden rounded-2xl border border-line"
@@ -223,7 +222,7 @@ export function EventsGallery() {
       data-header-tone="dark"
       className="relative h-[100svh] overflow-hidden bg-[#071828] text-white"
       aria-roledescription="carousel"
-      aria-label="Events gallery stack"
+      aria-label="Events gallery"
     >
       <div
         className="pointer-events-none absolute inset-0 opacity-70"
@@ -254,21 +253,22 @@ export function EventsGallery() {
             </p>
           </div>
           <p className="font-mono text-[0.65rem] uppercase tracking-[0.16em] text-white/45">
-            Scroll to advance
+            Scroll to fade
           </p>
         </header>
 
+        {/* One shared rounded container — images crossfade inside */}
         <div className="relative min-h-0 flex-1">
           <div
             ref={stageRef}
             className="absolute inset-0 overflow-hidden rounded-2xl border border-white/12 bg-blue-900/40 shadow-[0_30px_80px_-40px_rgba(0,0,0,0.75)]"
           >
-            {STACK_ITEMS.map((item, index) => (
+            {FRAME_ITEMS.map((item, index) => (
               <figure
                 key={item.id}
                 data-event-panel
-                className="absolute inset-0 h-full w-full overflow-hidden will-change-transform"
-                style={{ zIndex: index + 1 }}
+                className="absolute inset-0 h-full w-full overflow-hidden"
+                style={{ zIndex: index === 0 ? 2 : 1 }}
                 aria-hidden={index !== 0}
               >
                 <Image
@@ -279,7 +279,7 @@ export function EventsGallery() {
                   priority={index < 2}
                   className="object-cover object-center"
                 />
-                <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#071828]/75 via-transparent to-[#071828]/25" />
+                <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#071828]/70 via-transparent to-[#071828]/20" />
               </figure>
             ))}
           </div>
@@ -292,14 +292,14 @@ export function EventsGallery() {
           <div aria-live="polite" className="min-w-0">
             <p className="font-mono text-[0.65rem] uppercase tracking-[0.16em] text-white/50">
               <span ref={indexRef}>
-                01 / {String(STACK_ITEMS.length).padStart(2, "0")}
+                01 / {String(FRAME_ITEMS.length).padStart(2, "0")}
               </span>
             </p>
             <p
               ref={captionRef}
               className="mt-2 max-w-xl text-sm text-white/85 md:text-base"
             >
-              {STACK_ITEMS[0]?.alt}
+              {FRAME_ITEMS[0]?.alt}
             </p>
           </div>
 
@@ -310,7 +310,7 @@ export function EventsGallery() {
               role="tablist"
               aria-label="Event slides"
             >
-              {STACK_ITEMS.map((item, index) => (
+              {FRAME_ITEMS.map((item, index) => (
                 <span
                   key={item.id}
                   data-dot
