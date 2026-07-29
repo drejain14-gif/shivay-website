@@ -28,6 +28,14 @@ export const HERO_MEDIA_SLIDES: readonly HeroMediaSlide[] = [
     caption: "Civil materials testing",
   },
   {
+    id: "brick-water-absorption",
+    type: "video",
+    src: "/img/hero/video/brick-water-absorption.mp4",
+    poster: "/img/hero/video/brick-water-absorption-poster.jpg",
+    alt: "Brick tested for water absorption in the laboratory",
+    caption: "Brick water absorption test",
+  },
+  {
     id: "borehole-video",
     type: "video",
     src: "/img/hero/video/field-borehole.mp4",
