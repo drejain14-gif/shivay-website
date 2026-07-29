@@ -31,6 +31,9 @@ export const MOTION = {
   hero: {
     mediaScaleFrom: 1.06,
     mediaScaleTo: 1,
+    /** Pin distance per carousel slide (viewport heights). */
+    scrubPerSlideVh: 100,
+    scrubSmooth: 0.65,
   },
 } as const;
 
