@@ -32,6 +32,12 @@ export const MOTION = {
     mediaScaleFrom: 1.06,
     mediaScaleTo: 1,
   },
+  events: {
+    /** Extra scroll distance while the gallery is pinned (viewport heights). */
+    scrubEndVh: 320,
+    scrubSmooth: 0.55,
+    stagger: 0.14,
+  },
 } as const;
 
 export type MotionConfig = typeof MOTION;
