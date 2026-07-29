@@ -46,6 +46,7 @@ function MotionRuntime({ children }: Readonly<{ children: React.ReactNode }>) {
   const refreshScroll = useCallback(() => {
     void import("gsap/ScrollTrigger").then(({ ScrollTrigger }) => {
       ScrollTrigger.refresh();
+      lenisRef.current?.resize();
     });
   }, []);
 

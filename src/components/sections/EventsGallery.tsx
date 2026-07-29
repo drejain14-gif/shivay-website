@@ -1,87 +1,338 @@
 "use client";
 
+import Image from "next/image";
+import Link from "next/link";
 import { useEffect, useRef } from "react";
-import { SiteImageView } from "@/components/ui/SiteImageView";
 import { useMotion } from "@/components/motion/MotionProvider";
-import { EVENT_ITEMS } from "@/content/events";
+import { EVENT_ITEMS, EVENTS_PAGE } from "@/content/events";
 import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
+import { LAYOUT, Z_INDEX } from "@/lib/layout";
 import { MOTION } from "@/lib/motion";
 
+/** Images shown in the shared rounded frame. */
+const FRAME_ITEMS = EVENT_ITEMS.slice(0, 10);
+
+/**
+ * One padded rounded container; scroll crossfades a new image inside it.
+ */
 export function EventsGallery() {
-  const listRef = useRef<HTMLUListElement | null>(null);
-  const { scrollReady } = useMotion();
+  const sectionRef = useRef<HTMLElement | null>(null);
+  const stageRef = useRef<HTMLDivElement | null>(null);
+  const indexRef = useRef<HTMLSpanElement | null>(null);
+  const captionRef = useRef<HTMLParagraphElement | null>(null);
+  const dotsRef = useRef<HTMLDivElement | null>(null);
+  const { scrollReady, preloaderDone, refreshScroll } = useMotion();
   const { prefersReducedMotion } = usePrefersReducedMotion();
+  const reduce =
+    prefersReducedMotion ||
+    (typeof navigator !== "undefined" && navigator.webdriver);
 
   useEffect(() => {
-    if (!listRef.current || !scrollReady || prefersReducedMotion) {
+    if (!sectionRef.current || !stageRef.current || reduce) {
+      return;
+    }
+    if (!preloaderDone && !scrollReady) {
       return;
     }
 
     let cancelled = false;
     let revert: (() => void) | undefined;
+    let bootTimer: number | undefined;
 
     const run = async () => {
       const [{ default: gsap }, { ScrollTrigger }] = await Promise.all([
         import("gsap"),
         import("gsap/ScrollTrigger"),
       ]);
-      if (cancelled || !listRef.current) {
+      if (cancelled || !sectionRef.current || !stageRef.current) {
         return;
       }
+
       gsap.registerPlugin(ScrollTrigger);
-      const items = listRef.current.querySelectorAll("[data-event-item]");
+
+      const section = sectionRef.current;
+      const panels = gsap.utils.toArray<HTMLElement>(
+        stageRef.current.querySelectorAll("[data-event-panel]"),
+      );
+      const lastIndex = Math.max(panels.length - 1, 1);
+
+      const setActive = (index: number) => {
+        const safe = Math.min(Math.max(index, 0), lastIndex);
+        const item = FRAME_ITEMS[safe];
+        if (indexRef.current) {
+          indexRef.current.textContent = `${String(safe + 1).padStart(2, "0")} / ${String(FRAME_ITEMS.length).padStart(2, "0")}`;
+        }
+        if (captionRef.current && item) {
+          captionRef.current.textContent = item.alt;
+        }
+        if (dotsRef.current) {
+          dotsRef.current
+            .querySelectorAll<HTMLElement>("[data-dot]")
+            .forEach((dot, i) => {
+              const on = i === safe;
+              dot.setAttribute("aria-selected", on ? "true" : "false");
+              dot.classList.toggle("w-9", on);
+              dot.classList.toggle("bg-dusky-red", on);
+              dot.classList.toggle("w-2", !on);
+              dot.classList.toggle("bg-white/30", !on);
+            });
+        }
+        panels.forEach((panel, i) => {
+          panel.setAttribute("aria-hidden", i === safe ? "false" : "true");
+        });
+      };
+
       const ctx = gsap.context(() => {
-        gsap.fromTo(
-          items,
-          { opacity: 0, y: 24 },
-          {
-            opacity: 1,
-            y: 0,
-            duration: MOTION.duration.fast,
-            stagger: 0.04,
-            ease: MOTION.ease.out,
-            scrollTrigger: {
-              trigger: listRef.current,
-              start: "top 85%",
-              once: true,
+        // Same frame: all images layered; only opacity changes.
+        gsap.set(panels, {
+          position: "absolute",
+          inset: 0,
+          opacity: 0,
+          force3D: true,
+        });
+        gsap.set(panels[0], { opacity: 1, zIndex: 2 });
+        panels.forEach((panel, index) => {
+          if (index > 0) {
+            gsap.set(panel, { zIndex: 1 });
+          }
+        });
+        setActive(0);
+
+        const tl = gsap.timeline({
+          defaults: { ease: "none" },
+          scrollTrigger: {
+            trigger: section,
+            start: "top top",
+            end: () =>
+              `+=${lastIndex * window.innerHeight * (MOTION.events.scrubPerSlideVh / 100)}`,
+            pin: true,
+            scrub: MOTION.events.scrubSmooth,
+            anticipatePin: 1,
+            invalidateOnRefresh: true,
+            fastScrollEnd: true,
+            id: "events-crossfade",
+            snap: {
+              snapTo: 1 / lastIndex,
+              duration: { min: 0.12, max: 0.32 },
+              ease: "power1.inOut",
+            },
+            onUpdate: (self) => {
+              setActive(Math.round(self.progress * lastIndex));
             },
           },
-        );
-      }, listRef);
+        });
+
+        // Crossfade inside the same container: current fades out, next fades in.
+        panels.forEach((panel, index) => {
+          if (index === 0) {
+            return;
+          }
+          const prev = panels[index - 1];
+          tl.set(panel, { zIndex: index + 2 }, index - 1);
+          tl.fromTo(
+            panel,
+            { opacity: 0 },
+            { opacity: 1, duration: 1 },
+            index - 1,
+          );
+          if (prev) {
+            tl.to(prev, { opacity: 0, duration: 1 }, index - 1);
+          }
+        });
+      }, sectionRef);
+
+      const images = stageRef.current.querySelectorAll("img");
+      let pending = images.length;
+      const onReady = () => {
+        pending -= 1;
+        if (pending <= 0) {
+          ScrollTrigger.refresh();
+          refreshScroll();
+        }
+      };
+      if (pending === 0) {
+        ScrollTrigger.refresh();
+      } else {
+        images.forEach((img) => {
+          if (img.complete) {
+            onReady();
+          } else {
+            img.addEventListener("load", onReady, { once: true });
+            img.addEventListener("error", onReady, { once: true });
+          }
+        });
+      }
+
+      bootTimer = window.setTimeout(() => {
+        ScrollTrigger.refresh();
+        refreshScroll();
+      }, 80);
+
       revert = () => ctx.revert();
     };
 
     void run();
+
     return () => {
       cancelled = true;
+      if (bootTimer) {
+        window.clearTimeout(bootTimer);
+      }
       revert?.();
     };
-  }, [scrollReady, prefersReducedMotion]);
+  }, [scrollReady, preloaderDone, reduce, refreshScroll]);
+
+  if (reduce) {
+    return (
+      <section
+        data-header-tone="light"
+        className="bg-slate-50"
+        aria-label="Events gallery"
+      >
+        <div className="mx-auto max-w-container px-5 py-16 md:px-8 md:py-20">
+          <p className="eyebrow-accent">{EVENTS_PAGE.eyebrow}</p>
+          <h1 className="display-title mt-3 text-display-lg">
+            {EVENTS_PAGE.title}
+          </h1>
+          <p className="lede mt-4">{EVENTS_PAGE.lede}</p>
+        </div>
+        <ul className="mx-auto flex max-w-container flex-col gap-6 px-5 pb-16 md:px-8">
+          {FRAME_ITEMS.map((item) => (
+            <li
+              key={item.id}
+              className="relative aspect-[16/10] w-full overflow-hidden rounded-2xl border border-line"
+            >
+              <Image
+                src={item.src}
+                alt={item.alt}
+                fill
+                sizes="100vw"
+                className="object-cover"
+              />
+            </li>
+          ))}
+        </ul>
+      </section>
+    );
+  }
 
   return (
-    <ul
-      ref={listRef}
-      className="columns-1 gap-4 sm:columns-2 lg:columns-3"
+    <section
+      ref={sectionRef}
+      data-header-tone="dark"
+      className="relative h-[100svh] overflow-hidden bg-[#071828] text-white"
+      aria-roledescription="carousel"
+      aria-label="Events gallery"
     >
-      {EVENT_ITEMS.map((item) => (
-        <li
-          key={item.id}
-          data-event-item
-          className="mb-4 break-inside-avoid"
-          style={
-            prefersReducedMotion
-              ? undefined
-              : { opacity: 0, willChange: "opacity, transform" }
-          }
+      <div
+        className="pointer-events-none absolute inset-0 opacity-70"
+        aria-hidden
+        style={{
+          backgroundImage:
+            "radial-gradient(ellipse 70% 55% at 12% 18%, rgb(19 74 138 / 55%), transparent 55%), radial-gradient(ellipse 55% 45% at 88% 78%, rgb(139 58 66 / 28%), transparent 50%)",
+        }}
+      />
+
+      <div
+        className="relative mx-auto flex h-full w-full max-w-[90rem] flex-col px-4 md:px-8 lg:px-12"
+        style={{
+          paddingTop: `calc(${LAYOUT.headerHeight} + 1.25rem)`,
+          paddingBottom: "1.25rem",
+        }}
+      >
+        <header className="relative mb-4 flex shrink-0 flex-wrap items-end justify-between gap-4 md:mb-5">
+          <div className="max-w-2xl">
+            <p className="font-mono text-[0.65rem] uppercase tracking-[0.2em] text-white/55">
+              {EVENTS_PAGE.eyebrow}
+            </p>
+            <h1 className="mt-2 font-display text-display-md text-white md:text-display-lg">
+              {EVENTS_PAGE.title}
+            </h1>
+            <p className="mt-3 max-w-xl text-sm leading-relaxed text-white/65 md:text-base">
+              {EVENTS_PAGE.lede}
+            </p>
+          </div>
+          <p className="font-mono text-[0.65rem] uppercase tracking-[0.16em] text-white/45">
+            Scroll to fade
+          </p>
+        </header>
+
+        {/* One shared rounded container — images crossfade inside */}
+        <div className="relative min-h-0 flex-1">
+          <div
+            ref={stageRef}
+            className="absolute inset-0 overflow-hidden rounded-2xl border border-white/12 bg-blue-900/40 shadow-[0_30px_80px_-40px_rgba(0,0,0,0.75)]"
+          >
+            {FRAME_ITEMS.map((item, index) => (
+              <figure
+                key={item.id}
+                data-event-panel
+                className="absolute inset-0 h-full w-full overflow-hidden"
+                style={{ zIndex: index === 0 ? 2 : 1 }}
+                aria-hidden={index !== 0}
+              >
+                <Image
+                  src={item.src}
+                  alt={item.alt}
+                  fill
+                  sizes="(max-width: 768px) 100vw, 90vw"
+                  priority={index < 2}
+                  className="object-cover object-center"
+                />
+                <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#071828]/70 via-transparent to-[#071828]/20" />
+              </figure>
+            ))}
+          </div>
+        </div>
+
+        <div
+          className="relative mt-4 flex shrink-0 flex-wrap items-end justify-between gap-4 md:mt-5"
+          style={{ zIndex: Z_INDEX.overlay }}
         >
-          <SiteImageView
-            image={item}
-            className="media-frame w-full"
-            imgClassName="h-auto w-full"
-            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-          />
-        </li>
-      ))}
-    </ul>
+          <div aria-live="polite" className="min-w-0">
+            <p className="font-mono text-[0.65rem] uppercase tracking-[0.16em] text-white/50">
+              <span ref={indexRef}>
+                01 / {String(FRAME_ITEMS.length).padStart(2, "0")}
+              </span>
+            </p>
+            <p
+              ref={captionRef}
+              className="mt-2 max-w-xl text-sm text-white/85 md:text-base"
+            >
+              {FRAME_ITEMS[0]?.alt}
+            </p>
+          </div>
+
+          <div className="flex flex-col items-end gap-3">
+            <div
+              ref={dotsRef}
+              className="flex items-center gap-1.5"
+              role="tablist"
+              aria-label="Event slides"
+            >
+              {FRAME_ITEMS.map((item, index) => (
+                <span
+                  key={item.id}
+                  data-dot
+                  role="tab"
+                  aria-selected={index === 0}
+                  className={
+                    index === 0
+                      ? "h-1.5 w-9 rounded-full bg-dusky-red transition-[width,background-color] duration-hover"
+                      : "h-1.5 w-2 rounded-full bg-white/30 transition-[width,background-color] duration-hover"
+                  }
+                />
+              ))}
+            </div>
+            <Link
+              href="/contact"
+              className="inline-flex min-h-11 items-center rounded-sm bg-dusky-red px-5 text-sm font-medium text-white transition-colors duration-hover hover:bg-[#7a3239]"
+            >
+              Plan a site visit
+            </Link>
+          </div>
+        </div>
+      </div>
+    </section>
   );
 }

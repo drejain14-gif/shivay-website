@@ -69,7 +69,7 @@ export function ProcessSection() {
   }, [scrollReady, prefersReducedMotion]);
 
   return (
-    <section ref={sectionRef} className="bg-slate-50">
+    <section ref={sectionRef} data-header-tone="light" className="bg-slate-50">
       <Container className="section-y">
         <Reveal>
           <p className="eyebrow">{copy.eyebrow}</p>

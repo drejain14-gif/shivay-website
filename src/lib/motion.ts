@@ -32,6 +32,12 @@ export const MOTION = {
     mediaScaleFrom: 1.06,
     mediaScaleTo: 1,
   },
+  events: {
+    /** Viewport-height scroll distance per stacked slide. */
+    scrubPerSlideVh: 110,
+    scrubSmooth: 0.7,
+    stagger: 0.14,
+  },
 } as const;
 
 export type MotionConfig = typeof MOTION;

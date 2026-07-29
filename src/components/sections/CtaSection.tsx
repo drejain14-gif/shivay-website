@@ -8,7 +8,10 @@ export function CtaSection() {
   const copy = HOME_COPY.cta;
 
   return (
-    <section className="relative overflow-hidden bg-blue-900 text-white">
+    <section
+      data-header-tone="dark"
+      className="relative overflow-hidden bg-blue-900 text-white"
+    >
       <div
         className="pointer-events-none absolute inset-0 opacity-30"
         aria-hidden
