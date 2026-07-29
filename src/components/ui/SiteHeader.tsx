@@ -88,7 +88,8 @@ export function SiteHeader() {
               width={140}
               height={28}
               className={cn(
-                "hidden h-6 w-auto md:block",
+                "hidden h-7 w-auto md:block",
+                // Transparent wordmark: invert to white over dark hero
                 !onLight && "brightness-0 invert",
               )}
               priority
