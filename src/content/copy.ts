@@ -5,6 +5,8 @@ export const HOME_COPY = {
     brand: SITE.shortName.toUpperCase(),
     brandSub: "Technocrat Service",
     headline: "Accredited testing for India’s critical foundations.",
+    support:
+      "NABL-accredited mechanical laboratory — materials, geotech, pile, and NDT for metros, bridges, and highways.",
   },
   trust: {
     eyebrow: "Verified · Accredited · Field-proven",
