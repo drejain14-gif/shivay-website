@@ -2,7 +2,6 @@
 
 import Image from "next/image";
 import { useEffect, useRef } from "react";
-import { ButtonLink } from "@/components/ui/ButtonLink";
 import { Container } from "@/components/ui/Container";
 import { useMotion } from "@/components/motion/MotionProvider";
 import { HOME_COPY } from "@/content/copy";
@@ -42,7 +41,6 @@ export function HeroSection() {
         }
         const brand = root.querySelector("[data-hero-brand]");
         const lines = root.querySelectorAll("[data-hero-line]");
-        const ctas = root.querySelectorAll("[data-hero-cta]");
         const media = root.querySelector("[data-hero-media]");
 
         if (brand) {
@@ -67,20 +65,6 @@ export function HeroSection() {
               duration: MOTION.duration.base,
               stagger: MOTION.reveal.stagger,
               delay: 0.12,
-              ease: MOTION.ease.out,
-            },
-          );
-        }
-        if (ctas.length) {
-          gsap.fromTo(
-            ctas,
-            { opacity: 0, y: 18 },
-            {
-              opacity: 1,
-              y: 0,
-              duration: MOTION.duration.fast,
-              stagger: 0.08,
-              delay: 0.4,
               ease: MOTION.ease.out,
             },
           );
@@ -134,65 +118,23 @@ export function HeroSection() {
       </div>
 
       <Container className="relative z-10 w-full pb-20 pt-36 md:pb-28 md:pt-40">
-        <div className="grid gap-12 lg:grid-cols-12 lg:items-end">
-          <div className="lg:col-span-8">
-            <p
-              data-hero-brand
-              className="font-display text-display-xl tracking-brand"
-            >
-              {copy.brand}
-              <span className="mt-3 block font-sans text-sm font-medium tracking-[0.24em] text-white/65 md:text-base">
-                {copy.brandSub}
-              </span>
-            </p>
-            <div className="mt-5 h-1 w-20 bg-dusky-red" aria-hidden />
-            <h1
-              data-hero-line
-              className="mt-8 max-w-3xl font-display text-display-lg text-white"
-            >
-              {copy.headline}
-            </h1>
-            <p
-              data-hero-line
-              className="mt-6 max-w-measure text-base leading-relaxed text-white/78 md:text-lg"
-            >
-              {copy.support}
-            </p>
-            <div className="mt-10 flex flex-wrap gap-3">
-              <span data-hero-cta>
-                <ButtonLink href={copy.primaryCta.href} variant="primary">
-                  {copy.primaryCta.label}
-                </ButtonLink>
-              </span>
-              <span data-hero-cta>
-                <ButtonLink href={copy.secondaryCta.href} variant="secondary">
-                  {copy.secondaryCta.label}
-                </ButtonLink>
-              </span>
-            </div>
-          </div>
-          <div
-            data-hero-line
-            className="border-t border-white/15 pt-6 lg:col-span-4 lg:border-l lg:border-t-0 lg:pl-8 lg:pt-0"
+        <div className="max-w-3xl">
+          <p
+            data-hero-brand
+            className="font-display text-display-xl tracking-brand"
           >
-            <p className="font-mono text-[0.65rem] uppercase tracking-[0.18em] text-white/50">
-              Credentials
-            </p>
-            <ul className="mt-4 space-y-3 text-sm text-white/85">
-              <li className="flex gap-3">
-                <span className="mt-1.5 h-1.5 w-1.5 shrink-0 bg-dusky-red" />
-                NABL Accredited Mechanical Laboratory
-              </li>
-              <li className="flex gap-3">
-                <span className="mt-1.5 h-1.5 w-1.5 shrink-0 bg-dusky-red" />
-                Government Approved
-              </li>
-              <li className="flex gap-3">
-                <span className="mt-1.5 h-1.5 w-1.5 shrink-0 bg-dusky-red" />
-                Chartered Engineer (IEI) leadership
-              </li>
-            </ul>
-          </div>
+            {copy.brand}
+            <span className="mt-3 block font-sans text-[17px] font-medium tracking-[0.24em] text-white/65 md:text-[19px]">
+              {copy.brandSub}
+            </span>
+          </p>
+          <div className="mt-5 h-1 w-20 bg-dusky-red" aria-hidden />
+          <h1
+            data-hero-line
+            className="mt-8 max-w-3xl font-display text-display-lg text-white"
+          >
+            {copy.headline}
+          </h1>
         </div>
       </Container>
     </section>

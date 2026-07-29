@@ -9,7 +9,7 @@ export function TrustStripSection() {
         <Reveal>
           <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
             <p className="eyebrow max-w-[12rem]">
-              Verified · Accredited · Field-proven
+              {HOME_COPY.trust.eyebrow}
             </p>
             <ul className="flex flex-wrap gap-3">
               {HOME_COPY.trust.items.map((item) => (

@@ -1,9 +1,8 @@
 import { HeroSection } from "@/components/sections/HeroSection";
 import { TrustStripSection } from "@/components/sections/TrustStripSection";
-import { SpecialtySection } from "@/components/sections/SpecialtySection";
+import { AboutUsScrollSection } from "@/components/sections/AboutUsScrollSection";
 import { ServicesSection } from "@/components/sections/ServicesSection";
 import { ProcessSection } from "@/components/sections/ProcessSection";
-import { AboutTeaserSection } from "@/components/sections/AboutTeaserSection";
 import { CtaSection } from "@/components/sections/CtaSection";
 
 export default function HomePage() {
@@ -11,10 +10,9 @@ export default function HomePage() {
     <>
       <HeroSection />
       <TrustStripSection />
-      <SpecialtySection />
+      <AboutUsScrollSection />
       <ServicesSection />
       <ProcessSection />
-      <AboutTeaserSection />
       <CtaSection />
     </>
   );

@@ -95,7 +95,7 @@ export function ServicesSection() {
                     : { opacity: 0, willChange: "opacity, transform" }
                 }
               >
-                <Link href={`/services#${service.slug}`} className="block">
+                <Link href={`/services/${service.slug}`} className="block">
                   {image ? (
                     <SiteImageView
                       image={image}

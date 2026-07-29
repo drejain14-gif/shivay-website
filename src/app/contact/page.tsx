@@ -97,8 +97,7 @@ export default function ContactPage() {
                 <option>Pile Testing</option>
                 <option>Highway Infrastructure</option>
                 <option>NDT</option>
-                <option>Tender Consultation</option>
-                <option>Tender & EPC Support</option>
+                <option>Engineering consultation</option>
               </select>
             </label>
             <label className="block text-sm">

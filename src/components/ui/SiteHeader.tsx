@@ -39,9 +39,6 @@ export function SiteHeader() {
             <span className="font-display text-sm font-extrabold tracking-[0.16em] md:hidden">
               SHIVAAY
             </span>
-            <span className="text-[0.6rem] font-medium tracking-[0.12em] text-white/70">
-              Technocrat Service
-            </span>
           </span>
         </Link>
 

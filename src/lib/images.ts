@@ -29,10 +29,10 @@ export const IMAGES = {
     width: 1200,
     height: 1600,
   },
-  specialty: {
-    id: "specialty",
-    src: "/img/events/event-2.jpg",
-    alt: "Borehole investigation with Shivaay site banner on location",
+  founder: {
+    id: "founder",
+    src: "/img/founder.jpg",
+    alt: "Er. Vibhor Kulshrestha, Quality Manager at Shivaay Technocrat Service",
     width: 1200,
     height: 1600,
   },
@@ -74,7 +74,7 @@ export const IMAGES = {
   process4: {
     id: "process4",
     src: "/img/hero/hero_bg_new.png",
-    alt: "Large infrastructure project landscape for EPC support",
+    alt: "Large infrastructure project landscape for on-site support",
     width: 1920,
     height: 1080,
   },
@@ -113,13 +113,6 @@ export const IMAGES = {
     width: 1200,
     height: 1600,
   },
-  epc: {
-    id: "epc",
-    src: "/img/hero/hero_bg_new.png",
-    alt: "Large infrastructure and EPC project landscape",
-    width: 1920,
-    height: 1080,
-  },
   pageBanner: {
     id: "pageBanner",
     src: "/img/bg/breadcumb-bg.jpg",
@@ -141,20 +134,6 @@ export const IMAGES = {
     width: 1200,
     height: 1600,
   },
-  tenderHero: {
-    id: "tenderHero",
-    src: "/img/services/service-6.jpg",
-    alt: "Government-approved Shivaay field team supporting project packages",
-    width: 1200,
-    height: 1600,
-  },
-  tenderSupport: {
-    id: "tenderSupport",
-    src: "/img/services/service-5.jpg",
-    alt: "Site survey and documentation support for tender packages",
-    width: 1200,
-    height: 1600,
-  },
   eventsFeature: {
     id: "eventsFeature",
     src: "/img/events/1.jpeg",
@@ -170,7 +149,6 @@ export const SERVICE_IMAGE_BY_SLUG: Record<string, SiteImage> = {
   "pile-testing": IMAGES.pile,
   "highway-analysis": IMAGES.highway,
   ndt: IMAGES.ndt,
-  "epc-consultancy": IMAGES.epc,
 };
 
 export const SERVICE_ICON_BY_SLUG: Record<string, string> = {
@@ -179,7 +157,6 @@ export const SERVICE_ICON_BY_SLUG: Record<string, string> = {
   "pile-testing": "/img/icon/service_1_3.svg",
   "highway-analysis": "/img/icon/service_1_4.svg",
   ndt: "/img/icon/service_1_5.svg",
-  "epc-consultancy": "/img/icon/service_1_6.svg",
 };
 
 export const PROCESS_IMAGES = [

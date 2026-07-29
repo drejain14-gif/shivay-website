@@ -5,28 +5,35 @@ export const HOME_COPY = {
     brand: SITE.shortName.toUpperCase(),
     brandSub: "Technocrat Service",
     headline: "Accredited testing for India’s critical foundations.",
-    support:
-      "Geotech, materials, NDT, and pile testing for metros, bridges, and highway infrastructure.",
-    primaryCta: { label: "Request a test quote", href: "/contact" },
-    secondaryCta: { label: "View capabilities", href: "#services" },
   },
   trust: {
+    eyebrow: "Verified · Accredited · Field-proven",
     items: [
       "NABL Accredited",
       "Government Approved",
       "Jaipur HQ",
       "Chartered Engineer (IEI)",
+      "Testing Laboratory",
+      "Engineering consultation",
     ] as const,
   },
-  specialty: {
-    eyebrow: "Specialisation",
-    title: "Pile testing for metros and long-span bridges.",
-    body: "When foundations carry cities, precision is non-negotiable. We deliver focused pile testing and investigation support for metro corridors and long-span bridge structures.",
+  aboutUs: {
+    eyebrow: "About Us",
+    title: "About Us",
+    leadership:
+      "Under the leadership of Er. Vibhor Kulshrestha, Quality Manager",
+    paragraphs: [
+      "Shivaay is working as a consultant for quality or specific investigation of materials for infrastructure & highways.",
+      "We are glad to have the NABL Accredited mechanical laboratory. We will continue our journey towards the higher version of quality control laboratory as well as the larger version of consultant for highway & building etc.",
+    ] as const,
+    quote:
+      "Individual commitment to a group effort is what makes a team work, a company work, a society work, a civilization work.",
+    quoteAttribution: "Vince Lombardi",
   },
   services: {
-    eyebrow: "Capabilities",
+    eyebrow: "Services",
     title: "Laboratory and field expertise under one roof.",
-    body: "From materials and soil to NDT and EPC consultancy — report-ready quality for civil infrastructure.",
+    body: "From materials and soil to NDT — report-ready quality for civil infrastructure.",
   },
   process: {
     eyebrow: "How we work",
@@ -49,19 +56,10 @@ export const HOME_COPY = {
       },
       {
         number: "04",
-        title: "On-site & EPC support",
-        body: "Extend quality and investigation support into tender and execution phases.",
+        title: "On-site support",
+        body: "Extend quality and investigation support into field and execution phases.",
       },
     ] as const,
-  },
-  about: {
-    eyebrow: "Who we are",
-    title: "A mechanical laboratory grown into civil infrastructure assurance.",
-    body: `Since ${SITE.foundingMonth} ${SITE.foundingYear}, Shivaay Technocrat Service has grown from a mechanical laboratory into a multi-disciplinary consultancy serving the civil industry — Government approved and NABL accredited.`,
-    founderLine: `${SITE.founder.name} · ${SITE.founder.title}`,
-    visionQuote:
-      "To be recognized through performance and excellence as a leading consultant & quality engineer.",
-    cta: { label: "More about us", href: "/about" },
   },
   cta: {
     title: "Need testing or investigation for your next package?",
@@ -72,8 +70,7 @@ export const HOME_COPY = {
 } as const;
 
 export const NAV_LINKS = [
-  { label: "Capabilities", href: "/#services" },
-  { label: "Tender", href: "/tender" },
+  { label: "Services", href: "/#services" },
   { label: "Events", href: "/events" },
   { label: "About", href: "/about" },
   { label: "FAQ", href: "/faq" },
@@ -83,7 +80,6 @@ export const NAV_LINKS = [
 export const FOOTER_LINKS = [
   { label: "About Us", href: "/about" },
   { label: "Services", href: "/services" },
-  { label: "Tender", href: "/tender" },
   { label: "Events", href: "/events" },
   { label: "FAQ", href: "/faq" },
   { label: "Contact", href: "/contact" },
