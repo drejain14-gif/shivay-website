@@ -4,7 +4,7 @@ import { HOME_COPY } from "@/content/copy";
 
 export function TrustStripSection() {
   return (
-    <section className="border-b border-line bg-white">
+    <section data-header-tone="light" className="border-b border-line bg-white">
       <Container className="py-8 md:py-10">
         <Reveal>
           <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">

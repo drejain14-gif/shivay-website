@@ -3,96 +3,88 @@
 import Image from "next/image";
 import { useEffect, useRef } from "react";
 import { Container } from "@/components/ui/Container";
-import { useMotion } from "@/components/motion/MotionProvider";
 import { HOME_COPY } from "@/content/copy";
 import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
+import { useSectionObserver } from "@/hooks/useSectionObserver";
 import { IMAGES } from "@/lib/images";
+import { MOTION } from "@/lib/motion";
 
 export function AboutUsScrollSection() {
   const sectionRef = useRef<HTMLElement | null>(null);
-  const { scrollReady } = useMotion();
-  const { prefersReducedMotion } = usePrefersReducedMotion();
+  const playedRef = useRef(false);
+  const { prefersReducedMotion, ready } = usePrefersReducedMotion();
+  const reduce =
+    prefersReducedMotion ||
+    (typeof navigator !== "undefined" && navigator.webdriver);
   const copy = HOME_COPY.aboutUs;
+  const visible = useSectionObserver(sectionRef, {
+    enabled: ready && !reduce,
+    rootMargin: "0px 0px -10% 0px",
+    threshold: 0.18,
+  });
 
   useEffect(() => {
-    if (!sectionRef.current || !scrollReady) {
+    if (!sectionRef.current || reduce || !visible || playedRef.current) {
       return;
     }
 
-    if (prefersReducedMotion || navigator.webdriver) {
-      return;
-    }
-
+    playedRef.current = true;
     let cancelled = false;
-    let revert: (() => void) | undefined;
+    let tween: { kill: () => void } | undefined;
 
     const run = async () => {
-      const [{ default: gsap }, { ScrollTrigger }] = await Promise.all([
-        import("gsap"),
-        import("gsap/ScrollTrigger"),
-      ]);
+      const { default: gsap } = await import("gsap");
       if (cancelled || !sectionRef.current) {
         return;
       }
 
-      gsap.registerPlugin(ScrollTrigger);
+      const root = sectionRef.current;
+      const portrait = root.querySelector("[data-about-portrait]");
+      const blocks = root.querySelectorAll("[data-about-block]");
 
-      const ctx = gsap.context(() => {
-        const root = sectionRef.current;
-        if (!root) {
-          return;
-        }
-
-        const portrait = root.querySelector("[data-about-portrait]");
-        const blocks = root.querySelectorAll("[data-about-block]");
-
-        gsap.set(portrait, { opacity: 0, scale: 1.06 });
-        gsap.set(blocks, { opacity: 0, y: 36 });
-
-        const tl = gsap.timeline({
-          scrollTrigger: {
-            trigger: root,
-            start: "top top",
-            end: "+=220%",
-            pin: true,
-            scrub: 0.65,
-            anticipatePin: 1,
-          },
-        });
-
-        tl.to(
+      tween = gsap
+        .timeline({ defaults: { ease: MOTION.ease.out, overwrite: "auto" } })
+        .fromTo(
           portrait,
-          { opacity: 1, scale: 1, duration: 0.35, ease: "none" },
+          { opacity: 0.01, y: 24 },
+          {
+            opacity: 1,
+            y: 0,
+            duration: MOTION.duration.fast,
+            clearProps: "transform",
+          },
           0,
+        )
+        .fromTo(
+          blocks,
+          { opacity: 0.01, y: 20 },
+          {
+            opacity: 1,
+            y: 0,
+            duration: MOTION.duration.fast,
+            stagger: MOTION.reveal.itemDelay,
+            clearProps: "transform",
+          },
+          0.06,
         );
-
-        blocks.forEach((block, index) => {
-          tl.to(
-            block,
-            { opacity: 1, y: 0, duration: 0.28, ease: "none" },
-            0.2 + index * 0.22,
-          );
-        });
-      }, sectionRef);
-
-      revert = () => ctx.revert();
     };
 
     void run();
 
     return () => {
       cancelled = true;
-      revert?.();
+      tween?.kill();
     };
-  }, [scrollReady, prefersReducedMotion]);
+  }, [visible, reduce]);
 
   return (
     <section
       ref={sectionRef}
       id="about-us"
+      data-header-tone="light"
       className="relative overflow-hidden bg-dusky-red-soft"
     >
-      <Container className="flex min-h-[100svh] items-center py-20 md:py-24">
+      <Container className="section-y">
         <div className="grid w-full items-center gap-10 lg:grid-cols-12 lg:gap-14">
           <div className="lg:col-span-5">
             <div

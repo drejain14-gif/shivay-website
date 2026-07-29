@@ -10,7 +10,10 @@ type PageHeroProps = Readonly<{
 
 export function PageHero({ eyebrow, title, description }: PageHeroProps) {
   return (
-    <section className="relative flex min-h-[14rem] items-end overflow-hidden bg-blue-900 text-white md:min-h-[18rem]">
+    <section
+      data-header-tone="dark"
+      className="relative flex min-h-[14rem] items-end overflow-hidden bg-blue-900 text-white md:min-h-[18rem]"
+    >
       <Image
         src={IMAGES.pageBanner.src}
         alt=""
