@@ -35,33 +35,33 @@ export const SERVICES = [
     slug: "pile-testing",
     title: "Pile Testing",
     shortDescription:
-      "Specialised pile testing for metros and long-span bridges.",
+      "Specialised pile and foundation load testing — plate, pull-out, lateral, dynamic, and static — with report-ready results.",
     description:
-      "Field and laboratory support focused on pile performance for metro systems and long-span bridge foundations — precision where failure is not an option.",
+      "Field load testing for piles and shallow foundations: plate load, pull-out, lateral, dynamic (PDA), and static maintained-load tests. We verify capacity and settlement behaviour so consultants and contractors can accept foundations with confidence.",
     audience:
-      "Metro, bridge, and heavy foundation teams needing specialised pile performance verification.",
+      "Structural and geotechnical consultants, metro/bridge teams, developers, and contractors needing independent pile and foundation load verification.",
     highlights: [
-      "Specialised pile testing for metros and long-span bridges",
-      "Field execution with calibrated methods",
-      "Performance verification for critical foundations",
-      "Decision-ready reporting for consultants and authorities",
+      "Plate load testing for bearing and settlement checks",
+      "Pull-out and lateral load tests for uplift and horizontal demand",
+      "Dynamic and static pile load testing with detailed reports",
+      "Aligned to foundation design and acceptance workflows",
     ],
     featured: true,
   },
   {
-    slug: "highway-analysis",
-    title: "Highway Infrastructure",
+    slug: "engineering-consultancy",
+    title: "Engineering services & consultancy",
     shortDescription:
-      "Analysis and quality consultancy for highway infrastructure works.",
+      "Surveys, third-party inspection, PMC, and field/geophysical investigation for civil and infrastructure packages.",
     description:
-      "Investigation and testing aligned to highway project needs — from materials verification to infrastructure assessment support across pavement and related works.",
+      "Consultancy-led support across civil and infrastructure projects — DGPS, total station, drone and hydrological surveys; third-party inspection and project management consultancy; and field/geophysical investigation including ERT, TRT, soil penetration, and rock drilling. We help contractors, PMCs, and owners make clearer quality and compliance decisions through project phases.",
     audience:
-      "Highway contractors, PMC teams, and agencies needing materials and quality investigation on road packages.",
+      "Contractors, PMC teams, consultants, and agencies needing survey, third-party inspection, PMC, or field investigation support.",
     highlights: [
-      "Highway-aligned materials verification",
-      "Infrastructure assessment support",
-      "Quality consultancy through project phases",
-      "Documentation suited to package and authority review",
+      "Surveys — DGPS, Total Station, Drone & Hydrological",
+      "Third-party inspections & Project Management Consultancy (PMC)",
+      "Field & geophysical investigation — ERT, TRT, SPT (tripod), rock drilling (Calyx)",
+      "Quality investigation and engineering consultation support",
     ],
   },
   {

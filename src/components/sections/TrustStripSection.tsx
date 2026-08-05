@@ -1,5 +1,8 @@
+"use client";
+
 import { Container } from "@/components/ui/Container";
 import { Reveal } from "@/components/motion/Reveal";
+import { ScrubWords } from "@/components/motion/ScrubWords";
 import { HOME_COPY } from "@/content/copy";
 
 export function TrustStripSection() {
@@ -8,9 +11,11 @@ export function TrustStripSection() {
       <Container className="py-8 md:py-10">
         <Reveal>
           <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
-            <p className="eyebrow max-w-[12rem]">
-              {HOME_COPY.trust.eyebrow}
-            </p>
+            <ScrubWords
+              as="p"
+              text={HOME_COPY.trust.eyebrow}
+              className="eyebrow max-w-[14rem]"
+            />
             <ul className="flex flex-wrap gap-3">
               {HOME_COPY.trust.items.map((item) => (
                 <li key={item} className="trust-chip">

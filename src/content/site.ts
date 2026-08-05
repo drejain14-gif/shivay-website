@@ -10,8 +10,8 @@ export const SITE = {
   locale: "en_IN",
   phone: "+91-9828167975",
   phoneSecondary: "+91-9772178631",
-  email: "info@shivaaygroups.com",
-  emailSecondary: "shivaaytechno@gmail.com",
+  email: "shivaaytechno@gmail.com",
+  emailSecondary: "info@shivaaygroups.com",
   address: {
     street: "Diamond Retreat, C-9, Mahal Yojna, Jagatpura",
     city: "Jaipur",

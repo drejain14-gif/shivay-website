@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { IBM_Plex_Mono, IBM_Plex_Sans, Syne } from "next/font/google";
 import { SITE } from "@/content/site";
 import { MotionProvider } from "@/components/motion/MotionProvider";
+import { QuoteModalProvider } from "@/components/quote/QuoteModalProvider";
 import { SiteHeader } from "@/components/ui/SiteHeader";
 import { SiteFooter } from "@/components/sections/SiteFooter";
 import {
@@ -95,11 +96,13 @@ export default function RootLayout({
         >
           Skip to content
         </a>
-        <MotionProvider>
-          <SiteHeader />
-          <main id="main">{children}</main>
-          <SiteFooter />
-        </MotionProvider>
+        <QuoteModalProvider>
+          <MotionProvider>
+            <SiteHeader />
+            <main id="main">{children}</main>
+            <SiteFooter />
+          </MotionProvider>
+        </QuoteModalProvider>
       </body>
     </html>
   );

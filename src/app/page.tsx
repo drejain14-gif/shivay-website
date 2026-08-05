@@ -1,8 +1,7 @@
 import { HeroSection } from "@/components/sections/HeroSection";
 import { TrustStripSection } from "@/components/sections/TrustStripSection";
 import { AboutUsScrollSection } from "@/components/sections/AboutUsScrollSection";
-import { ServicesSection } from "@/components/sections/ServicesSection";
-import { ProcessSection } from "@/components/sections/ProcessSection";
+import { ServicesScrollSection } from "@/components/sections/ServicesScrollSection";
 import { CtaSection } from "@/components/sections/CtaSection";
 
 export default function HomePage() {
@@ -11,8 +10,7 @@ export default function HomePage() {
       <HeroSection />
       <TrustStripSection />
       <AboutUsScrollSection />
-      <ServicesSection />
-      <ProcessSection />
+      <ServicesScrollSection />
       <CtaSection />
     </>
   );

@@ -9,16 +9,15 @@ import { SERVICE_IMAGE_BY_SLUG } from "@/lib/images";
 export const metadata: Metadata = {
   title: "Services",
   description:
-    "Civil materials testing, geotech, pile testing, highway analysis, and NDT.",
+    "Civil materials testing, geotech, pile testing, engineering consultancy, and NDT.",
 };
 
 export default function ServicesPage() {
   return (
     <>
       <PageHero
-        eyebrow="Services"
         title="Services"
-        description="Laboratory and field expertise for civil infrastructure — materials, geotech, pile testing, highway analysis, and NDT."
+        description="Laboratory and field expertise for civil infrastructure — materials, geotech, pile testing, engineering consultancy, and NDT."
       />
       <section className="bg-white">
         <Container className="section-y">
@@ -47,7 +46,7 @@ export default function ServicesPage() {
                         </span>
                         {featured ? (
                           <span className="font-mono text-[0.65rem] uppercase tracking-[0.16em] text-dusky-red">
-                            Focus
+                          Featured
                           </span>
                         ) : null}
                       </div>

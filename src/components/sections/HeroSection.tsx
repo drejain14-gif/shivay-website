@@ -2,7 +2,9 @@
 
 import Image from "next/image";
 import { useEffect, useRef } from "react";
+import { ButtonLink } from "@/components/ui/ButtonLink";
 import { Container } from "@/components/ui/Container";
+import { RequestQuoteButton } from "@/components/quote/RequestQuoteButton";
 import { useMotion } from "@/components/motion/MotionProvider";
 import { HOME_COPY } from "@/content/copy";
 import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
@@ -41,6 +43,7 @@ export function HeroSection() {
         }
         const brand = root.querySelector("[data-hero-brand]");
         const lines = root.querySelectorAll("[data-hero-line]");
+        const ctas = root.querySelectorAll("[data-hero-cta]");
         const media = root.querySelector("[data-hero-media]");
 
         if (brand) {
@@ -65,6 +68,20 @@ export function HeroSection() {
               duration: MOTION.duration.base,
               stagger: MOTION.reveal.stagger,
               delay: 0.12,
+              ease: MOTION.ease.out,
+            },
+          );
+        }
+        if (ctas.length) {
+          gsap.fromTo(
+            ctas,
+            { opacity: 0, y: 18 },
+            {
+              opacity: 1,
+              y: 0,
+              duration: MOTION.duration.fast,
+              stagger: 0.08,
+              delay: 0.35,
               ease: MOTION.ease.out,
             },
           );
@@ -135,6 +152,18 @@ export function HeroSection() {
           >
             {copy.headline}
           </h1>
+          <div className="mt-10 flex flex-wrap gap-3">
+            <span data-hero-cta>
+              <RequestQuoteButton variant="primary">
+                {copy.primaryCta.label}
+              </RequestQuoteButton>
+            </span>
+            <span data-hero-cta>
+              <ButtonLink href={copy.secondaryCta.href} variant="secondary">
+                {copy.secondaryCta.label}
+              </ButtonLink>
+            </span>
+          </div>
         </div>
       </Container>
     </section>

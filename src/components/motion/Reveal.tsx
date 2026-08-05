@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/cn";
 import { MOTION } from "@/lib/motion";
 import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
@@ -22,6 +22,15 @@ export function Reveal({
   const ref = useRef<HTMLDivElement | null>(null);
   const { prefersReducedMotion } = usePrefersReducedMotion();
   const { scrollReady } = useMotion();
+  const [forceVisible, setForceVisible] = useState(false);
+
+  useEffect(() => {
+    if (scrollReady || prefersReducedMotion) {
+      return;
+    }
+    const timer = window.setTimeout(() => setForceVisible(true), 2500);
+    return () => window.clearTimeout(timer);
+  }, [scrollReady, prefersReducedMotion]);
 
   useEffect(() => {
     const el = ref.current;
@@ -29,7 +38,7 @@ export function Reveal({
       return;
     }
 
-    if (prefersReducedMotion || navigator.webdriver) {
+    if (prefersReducedMotion || navigator.webdriver || forceVisible) {
       el.style.opacity = "1";
       el.style.transform = "none";
       return;
@@ -85,16 +94,18 @@ export function Reveal({
       cancelled = true;
       revert?.();
     };
-  }, [scrollReady, prefersReducedMotion, delay]);
+  }, [scrollReady, prefersReducedMotion, delay, forceVisible]);
+
+  const hideUntilReady = !prefersReducedMotion && !forceVisible;
 
   return (
     <Tag
       ref={ref as never}
       className={cn(className)}
       style={
-        prefersReducedMotion
-          ? undefined
-          : { opacity: 0, willChange: "opacity, transform" }
+        hideUntilReady
+          ? { opacity: 0, willChange: "opacity, transform" }
+          : undefined
       }
     >
       {children}

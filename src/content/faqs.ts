@@ -2,7 +2,7 @@ export const FAQS = [
   {
     question: "What services does Shivaay Technocrat Service provide?",
     answer:
-      "Mechanical and civil materials laboratory testing, geotechnical investigation and soil testing, non-destructive testing (NDT), pile testing for metros and long-span bridges, and highway infrastructure analysis.",
+      "Mechanical and civil materials laboratory testing, geotechnical investigation and soil testing, non-destructive testing (NDT), pile load testing for metros and long-span bridges, and engineering services & consultancy (including highway infrastructure analysis).",
   },
   {
     question: "Are you Government Approved and NABL accredited?",

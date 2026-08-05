@@ -24,6 +24,10 @@ export const MOTION = {
     scale: 1.015,
     duration: 0.2,
   },
+  scrub: {
+    wordFromOpacity: 0.22,
+    pinScrub: 0.75,
+  },
   lenis: {
     duration: 1.1,
     wheelMultiplier: 0.9,

@@ -32,7 +32,7 @@ export const IMAGES = {
   founder: {
     id: "founder",
     src: "/img/founder.jpg",
-    alt: "Er. Vibhor Kulshrestha, Quality Manager at Shivaay Technocrat Service",
+    alt: `Er. Vibhor Kulshrestha, Founder & Chartered Engineer (IEI) at Shivaay Technocrat Service`,
     width: 1200,
     height: 1600,
   },
@@ -49,34 +49,6 @@ export const IMAGES = {
     alt: "Shivaay technicians conducting geotechnical soil testing in the field",
     width: 1200,
     height: 1600,
-  },
-  process1: {
-    id: "process1",
-    src: "/img/services/service-4.jpg",
-    alt: "Survey and site assessment with GNSS equipment",
-    width: 900,
-    height: 1200,
-  },
-  process2: {
-    id: "process2",
-    src: "/img/services/service-2.jpg",
-    alt: "On-site soil and density testing with field instruments",
-    width: 900,
-    height: 1200,
-  },
-  process3: {
-    id: "process3",
-    src: "/img/services/service-1.jpg",
-    alt: "Field team recording investigation data",
-    width: 1200,
-    height: 800,
-  },
-  process4: {
-    id: "process4",
-    src: "/img/hero/hero_bg_new.png",
-    alt: "Large infrastructure project landscape for on-site support",
-    width: 1920,
-    height: 1080,
   },
   materials: {
     id: "materials",
@@ -134,20 +106,13 @@ export const IMAGES = {
     width: 1200,
     height: 1600,
   },
-  eventsFeature: {
-    id: "eventsFeature",
-    src: "/img/events/1.jpeg",
-    alt: "Shivaay Technocrat Service exhibition booth at an industry expo",
-    width: 1600,
-    height: 1200,
-  },
 } as const satisfies Record<string, SiteImage>;
 
 export const SERVICE_IMAGE_BY_SLUG: Record<string, SiteImage> = {
   "materials-testing": IMAGES.materials,
   "geotech-soil": IMAGES.geotech,
   "pile-testing": IMAGES.pile,
-  "highway-analysis": IMAGES.highway,
+  "engineering-consultancy": IMAGES.highway,
   ndt: IMAGES.ndt,
 };
 
@@ -155,16 +120,9 @@ export const SERVICE_ICON_BY_SLUG: Record<string, string> = {
   "materials-testing": "/img/icon/service_1_1.svg",
   "geotech-soil": "/img/icon/service_1_2.svg",
   "pile-testing": "/img/icon/service_1_3.svg",
-  "highway-analysis": "/img/icon/service_1_4.svg",
+  "engineering-consultancy": "/img/icon/service_1_4.svg",
   ndt: "/img/icon/service_1_5.svg",
 };
-
-export const PROCESS_IMAGES = [
-  IMAGES.process1,
-  IMAGES.process2,
-  IMAGES.process3,
-  IMAGES.process4,
-] as const;
 
 /** Field/expo photos for /events — excludes known brochure flyer frames. */
 export const EVENTS_GALLERY: ReadonlyArray<SiteImage> = [
@@ -203,4 +161,6 @@ export const EVENTS_GALLERY: ReadonlyArray<SiteImage> = [
   { id: "ev-e2", src: "/img/events/event-2.jpg", alt: "Borehole investigation with company banner", width: 1200, height: 1600 },
   { id: "ev-e3", src: "/img/events/event-3.jpg", alt: "Field investigation activity", width: 1200, height: 1600 },
   { id: "ev-e4", src: "/img/events/event-4.jpg", alt: "On-site project investigation", width: 1200, height: 1600 },
+  { id: "ev-e5", src: "/img/events/event-5.jpg", alt: "Field investigation and survey work", width: 960, height: 1019 },
+  { id: "ev-e6", src: "/img/events/event-6.jpg", alt: "Project site photograph", width: 1113, height: 918 },
 ];

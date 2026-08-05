@@ -4,6 +4,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ButtonLink } from "@/components/ui/ButtonLink";
 import { Container } from "@/components/ui/Container";
+import { RequestQuoteButton } from "@/components/quote/RequestQuoteButton";
 import { SiteImageView } from "@/components/ui/SiteImageView";
 import {
   SERVICES,
@@ -12,6 +13,9 @@ import {
 } from "@/content/services";
 import { MATERIALS_TEST_CATEGORIES } from "@/content/materials-tests";
 import { GEOTECH_TEST_CATEGORIES } from "@/content/geotech-tests";
+import { ENGINEERING_SERVICE_CATEGORIES } from "@/content/engineering-services";
+import { NDT_TEST_CATEGORIES } from "@/content/ndt-tests";
+import { PileOfferingsSection } from "@/components/sections/PileOfferingsSection";
 import {
   SERVICE_ICON_BY_SLUG,
   SERVICE_IMAGE_BY_SLUG,
@@ -42,6 +46,20 @@ const TEST_SCOPE_BY_SLUG: Record<
     description:
       "Recommended scope of testing for soil and rock — organised by product / material tested.",
     categories: GEOTECH_TEST_CATEGORIES,
+  },
+  "engineering-consultancy": {
+    eyebrow: "Our capabilities",
+    title: "Services by category",
+    description:
+      "Surveys, consultancy, and field/geophysical investigation — organised by service type.",
+    categories: ENGINEERING_SERVICE_CATEGORIES,
+  },
+  ndt: {
+    eyebrow: "Our capabilities",
+    title: "Tests we perform",
+    description:
+      "Non-destructive testing methods used for on-site condition assessment.",
+    categories: NDT_TEST_CATEGORIES,
   },
 };
 
@@ -74,6 +92,7 @@ export default function ServiceDetailPage({ params }: ServicePageProps) {
   const icon = SERVICE_ICON_BY_SLUG[service.slug];
   const related = getRelatedServices(service.slug);
   const testScope = TEST_SCOPE_BY_SLUG[service.slug];
+  const showPileOfferings = service.slug === "pile-testing";
 
   return (
     <>
@@ -109,10 +128,7 @@ export default function ServiceDetailPage({ params }: ServicePageProps) {
               />
             ) : null}
             <div>
-              <p className="font-mono text-[0.65rem] uppercase tracking-[0.2em] text-white/55">
-                Service
-              </p>
-              <h1 className="mt-3 max-w-3xl font-display text-display-lg text-white">
+              <h1 className="max-w-3xl font-display text-display-lg text-white">
                 {service.title}
               </h1>
               <p className="mt-4 max-w-measure text-base text-white/75 md:text-lg">
@@ -134,20 +150,26 @@ export default function ServiceDetailPage({ params }: ServicePageProps) {
               {service.description}
             </p>
 
-            <h3 className="mt-12 font-display text-xl font-bold text-blue-900">
-              What we deliver
-            </h3>
-            <ul className="mt-6 space-y-4">
-              {service.highlights.map((item) => (
-                <li key={item} className="flex gap-3 text-base text-ink/80">
-                  <span
-                    className="mt-2 h-1.5 w-1.5 shrink-0 bg-dusky-red"
-                    aria-hidden
-                  />
-                  {item}
-                </li>
-              ))}
-            </ul>
+            {!showPileOfferings ? (
+              <>
+                <h3 className="mt-12 font-display text-xl font-bold text-blue-900">
+                  {service.slug === "engineering-consultancy"
+                    ? "Our consultancy services"
+                    : "What we deliver"}
+                </h3>
+                <ul className="mt-6 space-y-4">
+                  {service.highlights.map((item) => (
+                    <li key={item} className="flex gap-3 text-base text-ink/80">
+                      <span
+                        className="mt-2 h-1.5 w-1.5 shrink-0 bg-dusky-red"
+                        aria-hidden
+                      />
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </>
+            ) : null}
 
             <div className="mt-12 border-t border-line pt-10">
               <p className="font-mono text-[0.65rem] uppercase tracking-[0.16em] text-muted">
@@ -159,9 +181,9 @@ export default function ServiceDetailPage({ params }: ServicePageProps) {
             </div>
 
             <div className="mt-10 flex flex-wrap gap-3">
-              <ButtonLink href="/contact" variant="primary">
+              <RequestQuoteButton variant="primary" service={service.title}>
                 Request quote
-              </ButtonLink>
+              </RequestQuoteButton>
               <ButtonLink href="/services" variant="ghost">
                 Back to services
               </ButtonLink>
@@ -180,6 +202,8 @@ export default function ServiceDetailPage({ params }: ServicePageProps) {
           </aside>
         </Container>
       </section>
+
+      {showPileOfferings ? <PileOfferingsSection /> : null}
 
       {testScope ? (
         <section className="border-t border-line bg-blue-100/30">

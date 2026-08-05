@@ -5,6 +5,8 @@ export const HOME_COPY = {
     brand: SITE.shortName.toUpperCase(),
     brandSub: "Technocrat Service",
     headline: "Accredited testing for India’s critical foundations.",
+    primaryCta: { label: "Request quote", href: "/contact" },
+    secondaryCta: { label: "View services", href: "/services" },
   },
   trust: {
     eyebrow: "Verified · Accredited · Field-proven",
@@ -20,8 +22,7 @@ export const HOME_COPY = {
   aboutUs: {
     eyebrow: "About Us",
     title: "About Us",
-    leadership:
-      "Under the leadership of Er. Vibhor Kulshrestha, Quality Manager",
+    leadership: `Under the leadership of ${SITE.founder.name}, Quality Manager`,
     paragraphs: [
       "Shivaay is working as a consultant for quality or specific investigation of materials for infrastructure & highways.",
       "We are glad to have the NABL Accredited mechanical laboratory. We will continue our journey towards the higher version of quality control laboratory as well as the larger version of consultant for highway & building etc.",
@@ -33,33 +34,7 @@ export const HOME_COPY = {
   services: {
     eyebrow: "Services",
     title: "Laboratory and field expertise under one roof.",
-    body: "From materials and soil to NDT — report-ready quality for civil infrastructure.",
-  },
-  process: {
-    eyebrow: "How we work",
-    title: "From brief to report-ready results.",
-    steps: [
-      {
-        number: "01",
-        title: "Consultation",
-        body: "Scope the investigation or test programme against your project and standards.",
-      },
-      {
-        number: "02",
-        title: "Investigation & testing",
-        body: "Execute laboratory and field work with calibrated methods and clear documentation.",
-      },
-      {
-        number: "03",
-        title: "Reporting",
-        body: "Deliver clear, decision-ready reports for consultants, contractors, and authorities.",
-      },
-      {
-        number: "04",
-        title: "On-site support",
-        body: "Extend quality and investigation support into field and execution phases.",
-      },
-    ] as const,
+    body: "From materials and soil to pile load testing, NDT, and engineering consultancy — report-ready quality for civil infrastructure.",
   },
   cta: {
     title: "Need testing or investigation for your next package?",
@@ -70,7 +45,7 @@ export const HOME_COPY = {
 } as const;
 
 export const NAV_LINKS = [
-  { label: "Services", href: "/#services" },
+  { label: "Services", href: "/services" },
   { label: "Events", href: "/events" },
   { label: "About", href: "/about" },
   { label: "FAQ", href: "/faq" },

@@ -7,6 +7,18 @@ import { SITE } from "@/content/site";
 import { MOTION } from "@/lib/motion";
 import { Z_INDEX } from "@/lib/layout";
 
+function setShellInert(inert: boolean) {
+  const main = document.getElementById("main");
+  const header = document.querySelector("header");
+  if (inert) {
+    main?.setAttribute("inert", "");
+    header?.setAttribute("inert", "");
+  } else {
+    main?.removeAttribute("inert");
+    header?.removeAttribute("inert");
+  }
+}
+
 export function PreloaderGate() {
   const { prefersReducedMotion, ready } = usePrefersReducedMotion();
   const { preloaderDone, setPreloaderDone } = useMotion();
@@ -20,12 +32,15 @@ export function PreloaderGate() {
     if (prefersReducedMotion || navigator.webdriver) {
       setPreloaderDone(true);
       setVisible(false);
+      setShellInert(false);
       return;
     }
 
     if (preloaderDone) {
       return;
     }
+
+    setShellInert(true);
 
     let cancelled = false;
     let revert: (() => void) | undefined;
@@ -41,6 +56,7 @@ export function PreloaderGate() {
       if (!root || !letters?.length) {
         setPreloaderDone(true);
         setVisible(false);
+        setShellInert(false);
         return;
       }
 
@@ -49,6 +65,7 @@ export function PreloaderGate() {
           onComplete: () => {
             setPreloaderDone(true);
             setVisible(false);
+            setShellInert(false);
           },
         });
         tl.fromTo(
@@ -78,6 +95,7 @@ export function PreloaderGate() {
     return () => {
       cancelled = true;
       revert?.();
+      setShellInert(false);
     };
   }, [ready, prefersReducedMotion, preloaderDone, setPreloaderDone]);
 
@@ -92,16 +110,25 @@ export function PreloaderGate() {
       data-preloader
       className="fixed inset-0 flex items-center justify-center bg-blue-900 text-white"
       style={{ zIndex: Z_INDEX.preloader }}
-      aria-hidden={preloaderDone}
+      role="status"
+      aria-live="polite"
+      aria-busy={!preloaderDone}
+      aria-label="Loading"
     >
-      <p className="font-display text-3xl font-extrabold tracking-[0.2em] md:text-5xl">
+      <p
+        className="font-display text-3xl font-extrabold tracking-[0.2em] md:text-5xl"
+        aria-hidden
+      >
         {word.split("").map((char, index) => (
           <span key={`${char}-${index}`} data-letter className="inline-block">
             {char}
           </span>
         ))}
       </p>
-      <span className="absolute bottom-[28%] h-0.5 w-12 bg-dusky-red" />
+      <span
+        className="absolute bottom-[28%] h-0.5 w-12 bg-dusky-red"
+        aria-hidden
+      />
     </div>
   );
 }

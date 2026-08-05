@@ -3,11 +3,15 @@
 import { useEffect, useRef } from "react";
 import { SiteImageView } from "@/components/ui/SiteImageView";
 import { useMotion } from "@/components/motion/MotionProvider";
-import { EVENT_ITEMS } from "@/content/events";
 import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
+import type { SiteImage } from "@/lib/images";
 import { MOTION } from "@/lib/motion";
 
-export function EventsGallery() {
+type EventsGalleryProps = Readonly<{
+  items: ReadonlyArray<SiteImage>;
+}>;
+
+export function EventsGallery({ items }: EventsGalleryProps) {
   const listRef = useRef<HTMLUListElement | null>(null);
   const { scrollReady } = useMotion();
   const { prefersReducedMotion } = usePrefersReducedMotion();
@@ -63,7 +67,7 @@ export function EventsGallery() {
       ref={listRef}
       className="columns-1 gap-4 sm:columns-2 lg:columns-3"
     >
-      {EVENT_ITEMS.map((item) => (
+      {items.map((item) => (
         <li
           key={item.id}
           data-event-item
