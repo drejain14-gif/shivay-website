@@ -116,6 +116,7 @@ export function QuoteModal({ open, initialService, onClose }: QuoteModalProps) {
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center p-4"
+      data-lenis-prevent
       onMouseDown={(event) => {
         if (event.target === event.currentTarget) {
           onClose();
