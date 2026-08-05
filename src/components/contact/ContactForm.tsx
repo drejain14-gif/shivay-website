@@ -2,43 +2,35 @@
 
 import { useMemo, useState } from "react";
 import { SERVICES } from "@/content/services";
-import { SITE } from "@/content/site";
+import { SITE, getWhatsAppHref } from "@/content/site";
 
-function buildMailto(form: {
+function buildWhatsAppMessage(form: {
   name: string;
-  email: string;
   phone: string;
   service: string;
   message: string;
 }): string {
-  const subject = encodeURIComponent(
-    `Inquiry${form.service ? ` — ${form.service}` : ""} | ${SITE.shortName}`,
-  );
-  const body = encodeURIComponent(
-    [
-      `Name: ${form.name}`,
-      `Email: ${form.email}`,
-      form.phone ? `Phone: ${form.phone}` : null,
-      form.service ? `Service: ${form.service}` : null,
-      "",
-      form.message || "(No message provided)",
-    ]
-      .filter((line) => line !== null)
-      .join("\n"),
-  );
-  return `mailto:${SITE.email}?subject=${subject}&body=${body}`;
+  return [
+    `Inquiry | ${SITE.shortName}`,
+    `Name: ${form.name}`,
+    `Phone: ${form.phone}`,
+    form.service ? `Service: ${form.service}` : null,
+    "",
+    form.message || "(No message provided)",
+  ]
+    .filter((line) => line !== null)
+    .join("\n");
 }
 
 export function ContactForm() {
   const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [service, setService] = useState("");
   const [message, setMessage] = useState("");
 
   const canSubmit = useMemo(
-    () => name.trim().length > 1 && email.includes("@"),
-    [name, email],
+    () => name.trim().length > 1 && phone.trim().length > 6,
+    [name, phone],
   );
 
   const fieldClass =
@@ -52,18 +44,18 @@ export function ContactForm() {
         if (!canSubmit) {
           return;
         }
-        window.location.href = buildMailto({
+        const waMessage = buildWhatsAppMessage({
           name: name.trim(),
-          email: email.trim(),
           phone: phone.trim(),
           service,
           message: message.trim(),
         });
+        window.open(getWhatsAppHref(waMessage), "_blank", "noopener,noreferrer");
       }}
     >
       <p className="text-sm text-muted">
-        Opens your email app with a pre-filled message to {SITE.email}. Or call
-        / WhatsApp for a faster response.
+        Opens WhatsApp with a pre-filled message to {SITE.phone}. Or call us
+        directly for a faster response.
       </p>
       <label className="block text-sm">
         Name
@@ -76,21 +68,11 @@ export function ContactForm() {
         />
       </label>
       <label className="block text-sm">
-        Email
-        <input
-          type="email"
-          name="email"
-          required
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          className={fieldClass}
-        />
-      </label>
-      <label className="block text-sm">
         Phone
         <input
           type="tel"
           name="phone"
+          required
           value={phone}
           onChange={(e) => setPhone(e.target.value)}
           className={fieldClass}
@@ -132,7 +114,7 @@ export function ContactForm() {
         disabled={!canSubmit}
         className="min-h-11 rounded-sm bg-dusky-red px-5 py-3 text-sm font-medium text-white transition-opacity disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-dusky-red"
       >
-        Send
+        Send via WhatsApp
       </button>
     </form>
   );

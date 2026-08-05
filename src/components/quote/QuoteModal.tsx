@@ -2,7 +2,7 @@
 
 import { useEffect, useId, useMemo, useRef, useState } from "react";
 import { SERVICES } from "@/content/services";
-import { SITE, getMailtoHref, getTelHref } from "@/content/site";
+import { SITE, getTelHref, getWhatsAppHref } from "@/content/site";
 
 type QuoteModalProps = Readonly<{
   open: boolean;
@@ -15,29 +15,20 @@ const SERVICE_OPTIONS: ReadonlyArray<string> = [
   "Other / not sure",
 ];
 
-function buildQuoteMailto(form: {
+function buildQuoteWhatsAppMessage(form: {
   name: string;
   phone: string;
-  email: string;
   service: string;
   message: string;
 }): string {
-  const subject = encodeURIComponent(
-    `Quote request${form.service ? ` — ${form.service}` : ""} | ${SITE.shortName}`,
-  );
-  const body = encodeURIComponent(
-    [
-      `Name: ${form.name}`,
-      `Phone: ${form.phone}`,
-      form.email ? `Email: ${form.email}` : null,
-      `Service interested in: ${form.service || "Not specified"}`,
-      "",
-      form.message || "(No message provided)",
-    ]
-      .filter((line) => line !== null)
-      .join("\n"),
-  );
-  return `mailto:${SITE.email}?subject=${subject}&body=${body}`;
+  return [
+    `Quote request | ${SITE.shortName}`,
+    `Name: ${form.name}`,
+    `Phone: ${form.phone}`,
+    `Service interested in: ${form.service || "Not specified"}`,
+    "",
+    form.message || "(No message provided)",
+  ].join("\n");
 }
 
 export function QuoteModal({ open, initialService, onClose }: QuoteModalProps) {
@@ -47,7 +38,6 @@ export function QuoteModal({ open, initialService, onClose }: QuoteModalProps) {
 
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
-  const [email, setEmail] = useState("");
   const [service, setService] = useState(initialService ?? "");
   const [message, setMessage] = useState("");
   const [submitted, setSubmitted] = useState(false);
@@ -149,27 +139,36 @@ export function QuoteModal({ open, initialService, onClose }: QuoteModalProps) {
               Thanks{name.trim() ? `, ${name.trim().split(" ")[0]}` : ""}.
             </p>
             <p className="mt-3 text-sm text-muted">
-              Your email app should be opening now with a pre-filled request to{" "}
-              {SITE.email}.
+              We&rsquo;ve opened WhatsApp with your request pre-filled — just
+              hit send there and we&rsquo;ll reply shortly.
             </p>
             <p className="mt-1 text-sm text-muted">
-              Prefer to talk directly? Reach us here:
+              Didn&rsquo;t open automatically or prefer to call?
             </p>
             <div className="mt-5 flex flex-wrap items-center justify-center gap-3 text-sm">
               <a
-                href={getTelHref()}
+                href={getWhatsAppHref(
+                  buildQuoteWhatsAppMessage({
+                    name: name.trim(),
+                    phone: phone.trim(),
+                    service,
+                    message: message.trim(),
+                  }),
+                )}
+                target="_blank"
+                rel="noreferrer"
                 className="font-medium text-blue-700 hover:text-dusky-red"
               >
-                {SITE.phone}
+                Open WhatsApp
               </a>
               <span className="text-muted" aria-hidden>
                 ·
               </span>
               <a
-                href={getMailtoHref()}
+                href={getTelHref()}
                 className="font-medium text-blue-700 hover:text-dusky-red"
               >
-                {SITE.email}
+                {SITE.phone}
               </a>
             </div>
             <button
@@ -200,13 +199,13 @@ export function QuoteModal({ open, initialService, onClose }: QuoteModalProps) {
                 if (!canSubmit) {
                   return;
                 }
-                window.location.href = buildQuoteMailto({
+                const waMessage = buildQuoteWhatsAppMessage({
                   name: name.trim(),
                   phone: phone.trim(),
-                  email: email.trim(),
                   service,
                   message: message.trim(),
                 });
+                window.open(getWhatsAppHref(waMessage), "_blank", "noopener,noreferrer");
                 setSubmitted(true);
               }}
             >
@@ -230,17 +229,6 @@ export function QuoteModal({ open, initialService, onClose }: QuoteModalProps) {
                   required
                   value={phone}
                   onChange={(event) => setPhone(event.target.value)}
-                  className={fieldClass}
-                />
-              </label>
-
-              <label className="block text-sm text-ink/80">
-                Email <span className="text-muted">(optional)</span>
-                <input
-                  type="email"
-                  name="email"
-                  value={email}
-                  onChange={(event) => setEmail(event.target.value)}
                   className={fieldClass}
                 />
               </label>
@@ -286,11 +274,11 @@ export function QuoteModal({ open, initialService, onClose }: QuoteModalProps) {
                 disabled={!canSubmit}
                 className="min-h-11 w-full rounded-sm bg-dusky-red px-5 py-3 text-sm font-medium text-white transition-opacity disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-dusky-red"
               >
-                Send request
+                Send via WhatsApp
               </button>
               <p className="text-center text-xs text-muted">
-                Opens your email app with a pre-filled message. Prefer to
-                call? {SITE.phone}
+                Opens WhatsApp with a pre-filled message. Prefer to call?{" "}
+                {SITE.phone}
               </p>
             </form>
           </>

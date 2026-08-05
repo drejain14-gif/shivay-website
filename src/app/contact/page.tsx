@@ -3,12 +3,7 @@ import { ContactForm } from "@/components/contact/ContactForm";
 import { Container } from "@/components/ui/Container";
 import { PageHero } from "@/components/ui/PageHero";
 import { SiteImageView } from "@/components/ui/SiteImageView";
-import {
-  SITE,
-  getMailtoHref,
-  getTelHref,
-  getWhatsAppHref,
-} from "@/content/site";
+import { SITE, getTelHref, getWhatsAppHref } from "@/content/site";
 import { IMAGES } from "@/lib/images";
 
 export const metadata: Metadata = {
@@ -25,7 +20,7 @@ export default function ContactPage() {
       <PageHero
         eyebrow="Contact"
         title="Request a test quote"
-        description="Share your project type, location, and required tests. We respond during business hours."
+        description="Message us on WhatsApp or share your project type, location, and required tests below. We respond during business hours."
       />
       <section className="bg-white">
         <Container className="section-y grid gap-12 lg:grid-cols-12">
@@ -45,16 +40,6 @@ export default function ContactPage() {
                 {" · "}
                 <a className={linkClass} href={getTelHref(SITE.phoneSecondary)}>
                   {SITE.phoneSecondary}
-                </a>
-              </p>
-              <p>
-                <a className={linkClass} href={getMailtoHref()}>
-                  {SITE.email}
-                </a>
-              </p>
-              <p>
-                <a className={linkClass} href={getMailtoHref(SITE.emailSecondary)}>
-                  {SITE.emailSecondary}
                 </a>
               </p>
               <p className="text-muted">{SITE.openingHoursDisplay}</p>
