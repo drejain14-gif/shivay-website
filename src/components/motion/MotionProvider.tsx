@@ -93,6 +93,7 @@ function MotionRuntime({ children }: Readonly<{ children: React.ReactNode }>) {
         wheelMultiplier: MOTION.lenis.wheelMultiplier,
         smoothWheel: true,
         autoRaf: false,
+        prevent: (node) => node.closest("[data-lenis-prevent]") !== null,
       });
 
       instance.on("scroll", ScrollTrigger.update);
