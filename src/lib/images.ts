@@ -157,10 +157,4 @@ export const EVENTS_GALLERY: ReadonlyArray<SiteImage> = [
   { id: "ev-w", src: "/img/events/w.jpeg", alt: "Shivaay on-site presence", width: 1600, height: 1200 },
   { id: "ev-wr", src: "/img/events/wr.jpeg", alt: "Events gallery field image", width: 1600, height: 1200 },
   { id: "ev-x", src: "/img/events/x.jpeg", alt: "Project site gallery image", width: 1200, height: 1600 },
-  { id: "ev-e1", src: "/img/events/event-1.jpg", alt: "Geotechnical soil testing in the field", width: 1200, height: 1600 },
-  { id: "ev-e2", src: "/img/events/event-2.jpg", alt: "Borehole investigation with company banner", width: 1200, height: 1600 },
-  { id: "ev-e3", src: "/img/events/event-3.jpg", alt: "Field investigation activity", width: 1200, height: 1600 },
-  { id: "ev-e4", src: "/img/events/event-4.jpg", alt: "On-site project investigation", width: 1200, height: 1600 },
-  { id: "ev-e5", src: "/img/events/event-5.jpg", alt: "Field investigation and survey work", width: 960, height: 1019 },
-  { id: "ev-e6", src: "/img/events/event-6.jpg", alt: "Project site photograph", width: 1113, height: 918 },
 ];

@@ -33,7 +33,7 @@ export default function EventDetailPage({ params }: EventPageProps) {
 
   return (
     <>
-      <section className="relative flex min-h-[16rem] items-end overflow-hidden bg-blue-900 text-white md:min-h-[20rem]">
+      <section className="relative flex min-h-[24rem] items-end overflow-hidden bg-blue-900 text-white md:min-h-[36rem]">
         <Image
           src={event.cover.src}
           alt=""

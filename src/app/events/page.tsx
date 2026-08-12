@@ -21,7 +21,7 @@ export default function EventsPage() {
       />
       <section className="bg-white">
         <Container className="section-y">
-          <ul className="grid gap-6 sm:grid-cols-2">
+          <ul className="grid gap-8 sm:grid-cols-2">
             {EVENTS.map((event, index) => (
               <li
                 key={event.slug}
@@ -30,7 +30,7 @@ export default function EventsPage() {
                 <Link href={`/events/${event.slug}`} className="block">
                   <SiteImageView
                     image={event.cover}
-                    className="media-frame aspect-[16/10] w-full"
+                    className="media-frame aspect-[4/3] w-full"
                     fill
                     sizes="(max-width: 640px) 100vw, 50vw"
                   />

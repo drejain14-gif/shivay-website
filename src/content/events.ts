@@ -92,18 +92,7 @@ export const EVENTS: ReadonlyArray<EventEntry> = [
     name: "Harit Bharat Solar Expo",
     location: "Jaipur",
     date: "Jan '26",
-    images: byId(
-      "ev-v",
-      "ev-w",
-      "ev-wr",
-      "ev-x",
-      "ev-e1",
-      "ev-e2",
-      "ev-e3",
-      "ev-e4",
-      "ev-e5",
-      "ev-e6",
-    ),
+    images: byId("ev-v", "ev-w", "ev-wr", "ev-x"),
   }),
 ];
 
