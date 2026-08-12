@@ -120,7 +120,18 @@ export const EVENTS: ReadonlyArray<EventEntry> = [
     name: "Bharat Solar Expo",
     location: "Jaipur",
     date: "Jan '26",
-    images: byId("ev-v", "ev-w", "ev-wr", "ev-x"),
+    images: byId(
+      "ev-jaipur-jan-26-01",
+      "ev-jaipur-jan-26-02",
+      "ev-jaipur-jan-26-03",
+      "ev-jaipur-jan-26-04",
+      "ev-jaipur-jan-26-05",
+      "ev-jaipur-jan-26-06",
+      "ev-jaipur-jan-26-07",
+      "ev-jaipur-jan-26-08",
+      "ev-jaipur-jan-26-09",
+      "ev-jaipur-jan-26-10",
+    ),
   }),
 ];
 
