@@ -17,6 +17,6 @@ export const FAQS = [
   {
     question: "How can I request a test quote?",
     answer:
-      "Call +91-9828167975, email info@shivaaygroups.com, or use the Contact page with your project details and required tests.",
+      "Call +91-9828167975, message us on WhatsApp, or use the Contact page with your project details and required tests.",
   },
 ] as const;

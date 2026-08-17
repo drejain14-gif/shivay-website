@@ -39,7 +39,7 @@ export const HOME_COPY = {
   cta: {
     title: "Need testing or investigation for your next package?",
     body: "Tell us about the site, structure, or materials. We’ll respond with a clear path to scope and quote.",
-    primaryCta: { label: "Start an inquiry", href: "/contact" },
+    primaryCta: { label: "Start an inquiry" },
     phoneLabel: "Call",
   },
 } as const;

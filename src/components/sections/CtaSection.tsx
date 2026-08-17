@@ -3,7 +3,7 @@ import { Container } from "@/components/ui/Container";
 import { Reveal } from "@/components/motion/Reveal";
 import { ScrubWords } from "@/components/motion/ScrubWords";
 import { HOME_COPY } from "@/content/copy";
-import { SITE, getTelHref } from "@/content/site";
+import { SITE, getTelHref, getWhatsAppHref } from "@/content/site";
 
 export function CtaSection() {
   const copy = HOME_COPY.cta;
@@ -32,7 +32,7 @@ export function CtaSection() {
             />
             <p className="mt-5 max-w-measure text-white/75">{copy.body}</p>
             <div className="mt-9 flex flex-wrap gap-3">
-              <ButtonLink href={copy.primaryCta.href} variant="primary">
+              <ButtonLink href={getWhatsAppHref()} variant="primary" external>
                 {copy.primaryCta.label}
               </ButtonLink>
               <a

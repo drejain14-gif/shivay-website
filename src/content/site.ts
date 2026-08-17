@@ -46,14 +46,11 @@ export function getTelHref(phone: string = SITE.phone): string {
   return `tel:+${digits}`;
 }
 
-export function getMailtoHref(email: string = SITE.email): string {
-  return `mailto:${email}`;
-}
+const DEFAULT_WHATSAPP_MESSAGE =
+  "Hello — I would like to discuss testing / investigation services with Shivaay Technocrat Service.";
 
-export function getWhatsAppHref(): string {
+/** Builds a wa.me deep link that opens a chat with `SITE.phone`, optionally pre-filled with `message`. */
+export function getWhatsAppHref(message: string = DEFAULT_WHATSAPP_MESSAGE): string {
   const digits = SITE.phone.replace(/\D/g, "");
-  const text = encodeURIComponent(
-    "Hello — I would like to discuss testing / investigation services with Shivaay Technocrat Service.",
-  );
-  return `https://wa.me/${digits}?text=${text}`;
+  return `https://wa.me/${digits}?text=${encodeURIComponent(message)}`;
 }

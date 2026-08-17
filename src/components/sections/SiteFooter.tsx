@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Container } from "@/components/ui/Container";
 import { FOOTER_LINKS } from "@/content/copy";
-import { SITE, getMailtoHref, getTelHref } from "@/content/site";
+import { SITE, getTelHref, getWhatsAppHref } from "@/content/site";
 import { IMAGES } from "@/lib/images";
 
 export function SiteFooter() {
@@ -64,8 +64,13 @@ export function SiteFooter() {
               </a>
             </p>
             <p>
-              <a href={getMailtoHref()} className="hover:text-blue-900">
-                {SITE.email}
+              <a
+                href={getWhatsAppHref()}
+                target="_blank"
+                rel="noreferrer"
+                className="hover:text-blue-900"
+              >
+                Chat on WhatsApp
               </a>
             </p>
           </address>

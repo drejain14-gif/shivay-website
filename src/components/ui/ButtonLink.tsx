@@ -7,6 +7,8 @@ type ButtonLinkProps = Readonly<{
   children: React.ReactNode;
   variant?: ButtonVariant;
   className?: string;
+  /** Set for external links (e.g. WhatsApp) that should open in a new tab. */
+  external?: boolean;
 }>;
 
 export function ButtonLink({
@@ -14,9 +16,14 @@ export function ButtonLink({
   children,
   variant = "primary",
   className,
+  external = false,
 }: ButtonLinkProps) {
   return (
-    <Link href={href} className={cn(buttonBaseClass, buttonVariantClass[variant], className)}>
+    <Link
+      href={href}
+      className={cn(buttonBaseClass, buttonVariantClass[variant], className)}
+      {...(external ? { target: "_blank", rel: "noreferrer" } : {})}
+    >
       {children}
     </Link>
   );
