@@ -65,13 +65,13 @@ export function EventsGallery({ items }: EventsGalleryProps) {
   return (
     <ul
       ref={listRef}
-      className="columns-1 gap-4 sm:columns-2 lg:columns-3"
+      className="columns-1 gap-6 sm:columns-2"
     >
       {items.map((item) => (
         <li
           key={item.id}
           data-event-item
-          className="mb-4 break-inside-avoid"
+          className="mb-6 break-inside-avoid"
           style={
             prefersReducedMotion
               ? undefined
@@ -82,7 +82,7 @@ export function EventsGallery({ items }: EventsGalleryProps) {
             image={item}
             className="media-frame w-full"
             imgClassName="h-auto w-full"
-            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+            sizes="(max-width: 640px) 100vw, 50vw"
           />
         </li>
       ))}
