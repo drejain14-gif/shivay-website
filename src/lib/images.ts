@@ -24,10 +24,10 @@ export const IMAGES = {
   },
   hero: {
     id: "hero",
-    src: "/img/services/service-3.jpg",
-    alt: "Shivaay field team performing borehole investigation on site",
-    width: 1200,
-    height: 1600,
+    src: "/img/hero/hero-cover.jpg",
+    alt: "Pile load testing at dusk on a civil infrastructure site",
+    width: 1280,
+    height: 720,
   },
   founder: {
     id: "founder",
@@ -107,6 +107,13 @@ export const IMAGES = {
     height: 1600,
   },
 } as const satisfies Record<string, SiteImage>;
+
+/** Looping cinematic cover used by the homepage hero. */
+export const HERO_VIDEO = {
+  src: "/video/hero-loop.mp4",
+  type: "video/mp4",
+  poster: IMAGES.hero.src,
+} as const;
 
 export const SERVICE_IMAGE_BY_SLUG: Record<string, SiteImage> = {
   "materials-testing": IMAGES.materials,

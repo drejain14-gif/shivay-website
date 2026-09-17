@@ -8,7 +8,7 @@ import { RequestQuoteButton } from "@/components/quote/RequestQuoteButton";
 import { useMotion } from "@/components/motion/MotionProvider";
 import { HOME_COPY } from "@/content/copy";
 import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
-import { IMAGES } from "@/lib/images";
+import { HERO_VIDEO, IMAGES } from "@/lib/images";
 import { LAYOUT } from "@/lib/layout";
 import { MOTION } from "@/lib/motion";
 
@@ -121,14 +121,28 @@ export function HeroSection() {
         className="pointer-events-none absolute inset-0"
         aria-hidden
       >
-        <Image
-          src={IMAGES.hero.src}
-          alt=""
-          fill
-          priority
-          sizes="100vw"
-          className="object-cover object-[center_28%]"
-        />
+        {prefersReducedMotion ? (
+          <Image
+            src={IMAGES.hero.src}
+            alt=""
+            fill
+            priority
+            sizes="100vw"
+            className="object-cover object-center"
+          />
+        ) : (
+          <video
+            className="absolute inset-0 h-full w-full object-cover object-center"
+            autoPlay
+            muted
+            loop
+            playsInline
+            preload="auto"
+            poster={HERO_VIDEO.poster}
+          >
+            <source src={HERO_VIDEO.src} type={HERO_VIDEO.type} />
+          </video>
+        )}
         <div className="absolute inset-0 bg-blue-900/78" />
         <div className="absolute inset-0 bg-gradient-to-r from-blue-900 via-blue-900/70 to-blue-900/35" />
         <div className="absolute inset-0 bg-gradient-to-t from-blue-900 via-transparent to-blue-900/40" />
