@@ -92,13 +92,6 @@ export const IMAGES = {
     width: 1200,
     height: 1600,
   },
-  faqMedia: {
-    id: "faqMedia",
-    src: "/img/events/event-4.jpg",
-    alt: "Shivaay project site investigation work",
-    width: 1200,
-    height: 1600,
-  },
 } as const satisfies Record<string, SiteImage>;
 
 export const SERVICE_IMAGE_BY_SLUG: Record<string, SiteImage> = {

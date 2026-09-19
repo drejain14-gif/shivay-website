@@ -2,11 +2,9 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Container } from "@/components/ui/Container";
 import { PageHero } from "@/components/ui/PageHero";
-import { SiteImageView } from "@/components/ui/SiteImageView";
 import { FAQS } from "@/content/faqs";
 import { JsonLdScript } from "@/components/seo/JsonLdScript";
 import { SITE, getTelHref } from "@/content/site";
-import { IMAGES } from "@/lib/images";
 
 export const metadata: Metadata = {
   title: "FAQ",
@@ -36,16 +34,8 @@ export default function FaqPage() {
       />
       <JsonLdScript data={faqJsonLd} />
       <section className="bg-white">
-        <Container className="section-y grid gap-10 lg:grid-cols-12">
-          <div className="lg:col-span-4">
-            <SiteImageView
-              image={IMAGES.faqMedia}
-              className="media-frame aspect-[4/5] w-full"
-              fill
-              sizes="(max-width: 1024px) 100vw, 33vw"
-            />
-          </div>
-          <div className="space-y-4 lg:col-span-8">
+        <Container className="section-y">
+          <div className="mx-auto max-w-3xl space-y-4">
             {FAQS.map((faq) => (
               <details
                 key={faq.question}
