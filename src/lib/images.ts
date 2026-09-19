@@ -43,13 +43,6 @@ export const IMAGES = {
     width: 1200,
     height: 1600,
   },
-  aboutField: {
-    id: "aboutField",
-    src: "/img/events/event-1.jpg",
-    alt: "Shivaay technicians conducting geotechnical soil testing in the field",
-    width: 1200,
-    height: 1600,
-  },
   materials: {
     id: "materials",
     src: "/img/services/service-materials-testing-ai.jpg",
@@ -91,20 +84,6 @@ export const IMAGES = {
     alt: "",
     width: 1600,
     height: 400,
-  },
-  contactMedia: {
-    id: "contactMedia",
-    src: "/img/services/service-5.jpg",
-    alt: "Shivaay field survey team with GNSS equipment on site",
-    width: 1200,
-    height: 1600,
-  },
-  faqMedia: {
-    id: "faqMedia",
-    src: "/img/events/event-4.jpg",
-    alt: "Shivaay project site investigation work",
-    width: 1200,
-    height: 1600,
   },
 } as const satisfies Record<string, SiteImage>;
 
