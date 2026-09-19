@@ -2,9 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Container } from "@/components/ui/Container";
 import { PageHero } from "@/components/ui/PageHero";
-import { SiteImageView } from "@/components/ui/SiteImageView";
 import { SITE } from "@/content/site";
-import { IMAGES } from "@/lib/images";
 
 export const metadata: Metadata = {
   title: "About",
@@ -20,8 +18,8 @@ export default function AboutPage() {
         description="Government-approved, NABL-accredited mechanical laboratory and multi-disciplinary consultancy for the civil industry."
       />
       <section className="bg-white">
-        <Container className="section-y grid gap-10 md:grid-cols-2 md:items-start">
-          <div>
+        <Container className="section-y">
+          <div className="max-w-3xl">
             <p className="lede">
               Since {SITE.foundingMonth} {SITE.foundingYear}, Shivaay Technocrat
               Service has operated as a mechanical laboratory and grown into a
@@ -47,12 +45,6 @@ export default function AboutPage() {
               for project inquiries.
             </p>
           </div>
-          <SiteImageView
-            image={IMAGES.aboutField}
-            className="media-frame aspect-[4/5] w-full"
-            fill
-            sizes="(max-width: 768px) 100vw, 50vw"
-          />
         </Container>
       </section>
     </>

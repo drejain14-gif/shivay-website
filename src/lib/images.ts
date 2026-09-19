@@ -43,13 +43,6 @@ export const IMAGES = {
     width: 1200,
     height: 1600,
   },
-  aboutField: {
-    id: "aboutField",
-    src: "/img/about/about-field-geotech-ai.jpg",
-    alt: "Shivaay technicians conducting geotechnical soil testing in the field",
-    width: 864,
-    height: 1152,
-  },
   materials: {
     id: "materials",
     src: "/img/services/service-materials-testing-ai.jpg",
