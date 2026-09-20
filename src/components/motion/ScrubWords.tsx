@@ -5,6 +5,7 @@ import { useMotion } from "@/components/motion/MotionProvider";
 import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
 import { cn } from "@/lib/cn";
 import { splitIntoWords } from "@/lib/splitText";
+import { registerScrollTriggerPlugin } from "@/lib/teardownScrollTriggers";
 
 type ScrubWordsProps = Readonly<{
   text: string;
@@ -48,6 +49,7 @@ export function ScrubWords({
         return;
       }
       gsap.registerPlugin(ScrollTrigger);
+      registerScrollTriggerPlugin(ScrollTrigger);
 
       const wordEls = rootRef.current.querySelectorAll("[data-scrub-word]");
       const ctx = gsap.context(() => {

@@ -6,6 +6,7 @@ import { useMotion } from "@/components/motion/MotionProvider";
 import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
 import type { SiteImage } from "@/lib/images";
 import { MOTION } from "@/lib/motion";
+import { registerScrollTriggerPlugin } from "@/lib/teardownScrollTriggers";
 
 type EventsGalleryProps = Readonly<{
   items: ReadonlyArray<SiteImage>;
@@ -33,6 +34,7 @@ export function EventsGallery({ items }: EventsGalleryProps) {
         return;
       }
       gsap.registerPlugin(ScrollTrigger);
+      registerScrollTriggerPlugin(ScrollTrigger);
       const items = listRef.current.querySelectorAll("[data-event-item]");
       const ctx = gsap.context(() => {
         gsap.fromTo(

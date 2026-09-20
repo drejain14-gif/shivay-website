@@ -6,16 +6,16 @@ import { useMotion } from "@/components/motion/MotionProvider";
 import { ScrubWords } from "@/components/motion/ScrubWords";
 import { HOME_COPY } from "@/content/copy";
 import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
+import { registerScrollTriggerPlugin } from "@/lib/teardownScrollTriggers";
 
 export function AboutUsScrollSection() {
   const sectionRef = useRef<HTMLElement | null>(null);
-  const pinRef = useRef<HTMLDivElement | null>(null);
   const { scrollReady } = useMotion();
   const { prefersReducedMotion } = usePrefersReducedMotion();
   const copy = HOME_COPY.aboutUs;
 
   useEffect(() => {
-    if (!sectionRef.current || !pinRef.current || !scrollReady) {
+    if (!sectionRef.current || !scrollReady) {
       return;
     }
 
@@ -32,17 +32,17 @@ export function AboutUsScrollSection() {
         import("gsap"),
         import("gsap/ScrollTrigger"),
       ]);
-      if (cancelled || !sectionRef.current || !pinRef.current) {
+      if (cancelled || !sectionRef.current) {
         return;
       }
 
       gsap.registerPlugin(ScrollTrigger);
+      registerScrollTriggerPlugin(ScrollTrigger);
 
       mm = gsap.matchMedia();
       mm.add("(min-width: 1024px)", () => {
         const root = sectionRef.current;
-        const pin = pinRef.current;
-        if (!root || !pin) {
+        if (!root) {
           return;
         }
 
@@ -52,12 +52,10 @@ export function AboutUsScrollSection() {
         const ctx = gsap.context(() => {
           const tl = gsap.timeline({
             scrollTrigger: {
-              trigger: pin,
+              trigger: root,
               start: "top top",
-              end: "+=180%",
-              pin,
+              end: "bottom bottom",
               scrub: 0.65,
-              anticipatePin: 1,
             },
           });
 
@@ -99,9 +97,9 @@ export function AboutUsScrollSection() {
     <section
       ref={sectionRef}
       id="about-us"
-      className="bg-dusky-red-soft"
+      className="bg-dusky-red-soft lg:h-[280vh]"
     >
-      <div ref={pinRef} className="relative bg-dusky-red-soft lg:overflow-hidden">
+      <div className="relative bg-dusky-red-soft lg:sticky lg:top-0 lg:overflow-hidden">
         <Container className="flex items-center py-20 md:py-24 lg:min-h-[100svh]">
           <div className="w-full max-w-3xl">
             <div data-about-block>

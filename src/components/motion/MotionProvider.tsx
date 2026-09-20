@@ -17,6 +17,11 @@ import {
 } from "@/hooks/usePrefersReducedMotion";
 import { PreloaderGate } from "@/components/preloader/PreloaderGate";
 import { MOTION } from "@/lib/motion";
+import {
+  registerScrollTriggerPlugin,
+  shouldTeardownForAnchor,
+  teardownScrollTriggers,
+} from "@/lib/teardownScrollTriggers";
 
 type MotionContextValue = Readonly<{
   preloaderDone: boolean;
@@ -85,6 +90,7 @@ function MotionRuntime({ children }: Readonly<{ children: React.ReactNode }>) {
       }
 
       gsap.registerPlugin(ScrollTrigger);
+      registerScrollTriggerPlugin(ScrollTrigger);
       lenisRef.current?.destroy();
       lenisRef.current = null;
 
@@ -125,6 +131,34 @@ function MotionRuntime({ children }: Readonly<{ children: React.ReactNode }>) {
       lenisRef.current = null;
     };
   }, [prefersReducedMotion, ready, preloaderDone]);
+
+  useEffect(() => {
+    const onNavigate = (event: Event) => {
+      const target = event.target;
+      if (!(target instanceof Element)) {
+        return;
+      }
+      const anchor = target.closest("a[href]");
+      if (!(anchor instanceof HTMLAnchorElement)) {
+        return;
+      }
+      if (shouldTeardownForAnchor(anchor, event)) {
+        teardownScrollTriggers();
+      }
+    };
+
+    document.addEventListener("pointerdown", onNavigate, true);
+    document.addEventListener("click", onNavigate, true);
+    window.addEventListener("popstate", teardownScrollTriggers);
+    window.addEventListener("pagehide", teardownScrollTriggers);
+
+    return () => {
+      document.removeEventListener("pointerdown", onNavigate, true);
+      document.removeEventListener("click", onNavigate, true);
+      window.removeEventListener("popstate", teardownScrollTriggers);
+      window.removeEventListener("pagehide", teardownScrollTriggers);
+    };
+  }, []);
 
   useEffect(() => {
     if (!scrollReady) {
