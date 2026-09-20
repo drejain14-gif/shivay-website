@@ -15,13 +15,6 @@ export const IMAGES = {
     width: 64,
     height: 64,
   },
-  logoText: {
-    id: "logoText",
-    src: "/img/logo/logo-text.png",
-    alt: "Shivaay Technocrat Service",
-    width: 180,
-    height: 40,
-  },
   hero: {
     id: "hero",
     src: "/img/services/service-3.jpg",
