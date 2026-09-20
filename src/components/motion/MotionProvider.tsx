@@ -5,6 +5,7 @@ import {
   useCallback,
   useContext,
   useEffect,
+  useLayoutEffect,
   useMemo,
   useRef,
   useState,
@@ -17,6 +18,7 @@ import {
 } from "@/hooks/usePrefersReducedMotion";
 import { PreloaderGate } from "@/components/preloader/PreloaderGate";
 import { MOTION } from "@/lib/motion";
+import { resetPageScroll } from "@/lib/resetPageScroll";
 import {
   registerScrollTriggerPlugin,
   shouldTeardownForAnchor,
@@ -47,11 +49,18 @@ function MotionRuntime({ children }: Readonly<{ children: React.ReactNode }>) {
   const [preloaderDone, setPreloaderDone] = useState(false);
   const [scrollReady, setScrollReady] = useState(false);
   const lenisRef = useRef<Lenis | null>(null);
+  const previousPathname = useRef(pathname);
 
   const refreshScroll = useCallback(() => {
     void import("gsap/ScrollTrigger").then(({ ScrollTrigger }) => {
       ScrollTrigger.refresh();
     });
+  }, []);
+
+  useEffect(() => {
+    if ("scrollRestoration" in history) {
+      history.scrollRestoration = "manual";
+    }
   }, []);
 
   useEffect(() => {
@@ -93,6 +102,9 @@ function MotionRuntime({ children }: Readonly<{ children: React.ReactNode }>) {
       registerScrollTriggerPlugin(ScrollTrigger);
       lenisRef.current?.destroy();
       lenisRef.current = null;
+      if ("scrollRestoration" in history) {
+        history.scrollRestoration = "manual";
+      }
 
       const instance = new Lenis({
         duration: MOTION.lenis.duration,
@@ -159,6 +171,23 @@ function MotionRuntime({ children }: Readonly<{ children: React.ReactNode }>) {
       window.removeEventListener("pagehide", teardownScrollTriggers);
     };
   }, []);
+
+  useLayoutEffect(() => {
+    if (previousPathname.current === pathname) {
+      return;
+    }
+    previousPathname.current = pathname;
+
+    const run = () => resetPageScroll(lenisRef.current);
+    run();
+    const frame = window.requestAnimationFrame(run);
+    const timers = [0, 50].map((ms) => window.setTimeout(run, ms));
+
+    return () => {
+      window.cancelAnimationFrame(frame);
+      timers.forEach((id) => window.clearTimeout(id));
+    };
+  }, [pathname]);
 
   useEffect(() => {
     if (!scrollReady) {
