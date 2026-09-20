@@ -5,6 +5,7 @@ import {
   useCallback,
   useContext,
   useEffect,
+  useLayoutEffect,
   useMemo,
   useRef,
   useState,
@@ -17,6 +18,12 @@ import {
 } from "@/hooks/usePrefersReducedMotion";
 import { PreloaderGate } from "@/components/preloader/PreloaderGate";
 import { MOTION } from "@/lib/motion";
+import { resetPageScroll } from "@/lib/resetPageScroll";
+import {
+  registerScrollTriggerPlugin,
+  shouldTeardownForAnchor,
+  teardownScrollTriggers,
+} from "@/lib/teardownScrollTriggers";
 
 type MotionContextValue = Readonly<{
   preloaderDone: boolean;
@@ -42,11 +49,18 @@ function MotionRuntime({ children }: Readonly<{ children: React.ReactNode }>) {
   const [preloaderDone, setPreloaderDone] = useState(false);
   const [scrollReady, setScrollReady] = useState(false);
   const lenisRef = useRef<Lenis | null>(null);
+  const previousPathname = useRef(pathname);
 
   const refreshScroll = useCallback(() => {
     void import("gsap/ScrollTrigger").then(({ ScrollTrigger }) => {
       ScrollTrigger.refresh();
     });
+  }, []);
+
+  useEffect(() => {
+    if ("scrollRestoration" in history) {
+      history.scrollRestoration = "manual";
+    }
   }, []);
 
   useEffect(() => {
@@ -85,8 +99,12 @@ function MotionRuntime({ children }: Readonly<{ children: React.ReactNode }>) {
       }
 
       gsap.registerPlugin(ScrollTrigger);
+      registerScrollTriggerPlugin(ScrollTrigger);
       lenisRef.current?.destroy();
       lenisRef.current = null;
+      if ("scrollRestoration" in history) {
+        history.scrollRestoration = "manual";
+      }
 
       const instance = new Lenis({
         duration: MOTION.lenis.duration,
@@ -125,6 +143,51 @@ function MotionRuntime({ children }: Readonly<{ children: React.ReactNode }>) {
       lenisRef.current = null;
     };
   }, [prefersReducedMotion, ready, preloaderDone]);
+
+  useEffect(() => {
+    const onNavigate = (event: Event) => {
+      const target = event.target;
+      if (!(target instanceof Element)) {
+        return;
+      }
+      const anchor = target.closest("a[href]");
+      if (!(anchor instanceof HTMLAnchorElement)) {
+        return;
+      }
+      if (shouldTeardownForAnchor(anchor, event)) {
+        teardownScrollTriggers();
+      }
+    };
+
+    document.addEventListener("pointerdown", onNavigate, true);
+    document.addEventListener("click", onNavigate, true);
+    window.addEventListener("popstate", teardownScrollTriggers);
+    window.addEventListener("pagehide", teardownScrollTriggers);
+
+    return () => {
+      document.removeEventListener("pointerdown", onNavigate, true);
+      document.removeEventListener("click", onNavigate, true);
+      window.removeEventListener("popstate", teardownScrollTriggers);
+      window.removeEventListener("pagehide", teardownScrollTriggers);
+    };
+  }, []);
+
+  useLayoutEffect(() => {
+    if (previousPathname.current === pathname) {
+      return;
+    }
+    previousPathname.current = pathname;
+
+    const run = () => resetPageScroll(lenisRef.current);
+    run();
+    const frame = window.requestAnimationFrame(run);
+    const timers = [0, 50].map((ms) => window.setTimeout(run, ms));
+
+    return () => {
+      window.cancelAnimationFrame(frame);
+      timers.forEach((id) => window.clearTimeout(id));
+    };
+  }, [pathname]);
 
   useEffect(() => {
     if (!scrollReady) {

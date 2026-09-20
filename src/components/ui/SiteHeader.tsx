@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { Container } from "@/components/ui/Container";
 import { useQuoteModal } from "@/components/quote/QuoteModalProvider";
 import { NAV_LINKS } from "@/content/copy";
+import { SITE } from "@/content/site";
 import { cn } from "@/lib/cn";
 import { IMAGES } from "@/lib/images";
 import { LAYOUT, Z_INDEX } from "@/lib/layout";
@@ -34,27 +35,21 @@ export function SiteHeader() {
       style={{ zIndex: Z_INDEX.sticky, height: LAYOUT.headerHeight }}
     >
       <Container className="flex h-full items-center justify-between">
-        <Link href="/" className={cn("flex items-center gap-3", focusRing)}>
+        <Link
+          href="/"
+          aria-label={SITE.name}
+          className={cn("flex items-center gap-3", focusRing)}
+        >
           <Image
             src={IMAGES.logoIcon.src}
-            alt={IMAGES.logoIcon.alt}
+            alt=""
             width={40}
             height={40}
             className="h-10 w-10"
             priority
           />
-          <span className="flex flex-col">
-            <Image
-              src={IMAGES.logoText.src}
-              alt=""
-              width={140}
-              height={28}
-              className="hidden h-6 w-auto md:block"
-              priority
-            />
-            <span className="font-display text-sm font-extrabold tracking-[0.16em] md:hidden">
-              SHIVAAY
-            </span>
+          <span className="font-display text-lg font-extrabold tracking-[0.14em] text-white md:text-xl">
+            {SITE.shortName}
           </span>
         </Link>
 

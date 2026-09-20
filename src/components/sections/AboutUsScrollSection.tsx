@@ -6,6 +6,7 @@ import { useMotion } from "@/components/motion/MotionProvider";
 import { ScrubWords } from "@/components/motion/ScrubWords";
 import { HOME_COPY } from "@/content/copy";
 import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
+import { registerScrollTriggerPlugin } from "@/lib/teardownScrollTriggers";
 
 export function AboutUsScrollSection() {
   const sectionRef = useRef<HTMLElement | null>(null);
@@ -36,6 +37,7 @@ export function AboutUsScrollSection() {
       }
 
       gsap.registerPlugin(ScrollTrigger);
+      registerScrollTriggerPlugin(ScrollTrigger);
 
       mm = gsap.matchMedia();
       mm.add("(min-width: 1024px)", () => {
@@ -52,10 +54,8 @@ export function AboutUsScrollSection() {
             scrollTrigger: {
               trigger: root,
               start: "top top",
-              end: "+=180%",
-              pin: true,
+              end: "bottom bottom",
               scrub: 0.65,
-              anticipatePin: 1,
             },
           });
 
@@ -97,49 +97,51 @@ export function AboutUsScrollSection() {
     <section
       ref={sectionRef}
       id="about-us"
-      className="relative bg-dusky-red-soft lg:overflow-hidden"
+      className="bg-dusky-red-soft lg:h-[280vh]"
     >
-      <Container className="flex items-center py-20 md:py-24 lg:min-h-[100svh]">
-        <div className="w-full max-w-3xl">
-          <div data-about-block>
-            <ScrubWords
-              as="h2"
-              text={copy.title}
-              className="display-title text-display-lg"
-            />
-            <span className="mt-6 block h-1 w-24 bg-dusky-red" aria-hidden />
-          </div>
+      <div className="relative bg-dusky-red-soft lg:sticky lg:top-0 lg:overflow-hidden">
+        <Container className="flex items-center py-20 md:py-24 lg:min-h-[100svh]">
+          <div className="w-full max-w-3xl">
+            <div data-about-block>
+              <ScrubWords
+                as="h2"
+                text={copy.title}
+                className="display-title text-display-lg"
+              />
+              <span className="mt-6 block h-1 w-24 bg-dusky-red" aria-hidden />
+            </div>
 
-          <p
-            data-about-block
-            className="mt-8 font-display text-lg font-semibold text-blue-900 md:text-xl"
-          >
-            {copy.leadership}
-          </p>
-
-          {copy.paragraphs.map((paragraph) => (
             <p
-              key={paragraph}
               data-about-block
-              className="mt-5 max-w-measure text-base leading-relaxed text-ink/80 md:text-lg"
+              className="mt-8 font-display text-lg font-semibold text-blue-900 md:text-xl"
             >
-              {paragraph}
+              {copy.leadership}
             </p>
-          ))}
 
-          <blockquote
-            data-about-block
-            className="mt-10 border-l-2 border-dusky-red pl-5"
-          >
-            <p className="font-display text-lg leading-snug text-blue-900 md:text-xl">
-              “{copy.quote}”
-            </p>
-            <footer className="mt-4 font-mono text-xs uppercase tracking-[0.16em] text-muted">
-              — {copy.quoteAttribution}
-            </footer>
-          </blockquote>
-        </div>
-      </Container>
+            {copy.paragraphs.map((paragraph) => (
+              <p
+                key={paragraph}
+                data-about-block
+                className="mt-5 max-w-measure text-base leading-relaxed text-ink/80 md:text-lg"
+              >
+                {paragraph}
+              </p>
+            ))}
+
+            <blockquote
+              data-about-block
+              className="mt-10 border-l-2 border-dusky-red pl-5"
+            >
+              <p className="font-display text-lg leading-snug text-blue-900 md:text-xl">
+                “{copy.quote}”
+              </p>
+              <footer className="mt-4 font-mono text-xs uppercase tracking-[0.16em] text-muted">
+                — {copy.quoteAttribution}
+              </footer>
+            </blockquote>
+          </div>
+        </Container>
+      </div>
     </section>
   );
 }

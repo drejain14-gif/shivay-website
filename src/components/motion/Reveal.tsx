@@ -5,6 +5,7 @@ import { cn } from "@/lib/cn";
 import { MOTION } from "@/lib/motion";
 import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
 import { useMotion } from "@/components/motion/MotionProvider";
+import { registerScrollTriggerPlugin } from "@/lib/teardownScrollTriggers";
 
 type RevealProps = Readonly<{
   children: React.ReactNode;
@@ -61,6 +62,7 @@ export function Reveal({
       }
 
       gsap.registerPlugin(ScrollTrigger);
+      registerScrollTriggerPlugin(ScrollTrigger);
       const ctx = gsap.context(() => {
         if (!ref.current) {
           return;
